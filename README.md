@@ -1,6 +1,6 @@
 # strapi-provider-upload-google-storage
 
-**Non-Official** Google Storage Provider for Strapi Upload
+**Non-Official** Google Cloud Storage Provider for Strapi Upload
 
 ## Installation
 

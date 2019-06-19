@@ -1,7 +1,7 @@
 {
-  "name": "strapi-provider-upload-google-storage",
+  "name": "strapi-provider-upload-google-cloud-storage",
   "version": "3.0.0-beta.6",
-  "description": "(Non-official) Google Storage Provider for Strapi Upload",
+  "description": "(Non-official) Google Cloud Storage Provider for Strapi Upload",
   "directories": {
     "lib": "./lib"
   },
