@@ -1,4 +1,4 @@
-# strapi-provider-upload-google-storage
+# strapi-provider-upload-google-cloud-storage
 
 **Non-Official** Google Cloud Storage Provider for Strapi Upload
 
@@ -8,7 +8,7 @@ Install the package from your app root directory
 
 ```
 cd /path/to/strapi/
-npm install strapi-provider-upload-google-storage --save
+npm install strapi-provider-upload-google-cloud-storage --save
 ```
 
 ## Setting up Google authentification

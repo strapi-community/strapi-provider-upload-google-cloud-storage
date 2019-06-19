@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lith/strapi-provider-upload-google-storage.git"
+    "url": "git+https://github.com/Lith/strapi-provider-upload-google-cloud-storage.git"
   },
   "keywords": [
     "strapi",
@@ -36,9 +36,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Lith/strapi-provider-upload-google-storage/issues"
+    "url": "https://github.com/Lith/strapi-provider-upload-google-cloud-storage/issues"
   },
-  "homepage": "https://github.com/Lith/strapi-provider-upload-google-storage#readme",
+  "homepage": "https://github.com/Lith/strapi-provider-upload-google-cloud-storage#readme",
   "dependencies": {
     "@google-cloud/storage": "^2.5.0",
     "slugify": "^1.3.4"
