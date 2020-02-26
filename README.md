@@ -17,7 +17,7 @@ npm install strapi-provider-upload-google-cloud-storage --save
     - **[Go to the create service account key page](https://console.cloud.google.com/apis/credentials/serviceaccountkey)**
 2. From the **Service account** list, select **New service account**.
 3. In the **Service account name** field, enter a name.
-4. From the **Role** list, select **Project > Owner**.
+4. From the **Role** list, select **Storage > Administrator**.   
 5. Click **Create**. A JSON file that contains your key downloads to your computer.
 
 ## Setting up Strapi upload configuration
