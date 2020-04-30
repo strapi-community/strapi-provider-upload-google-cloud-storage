@@ -28,7 +28,7 @@ npm install strapi-provider-upload-google-cloud-storage --save
 {
   "provider": "google-cloud-storage",
   "providerOptions": {
-    "serviceAccount": "${process.env.GCS_SERVICE_ACCOUNT || 'GCP_SERVICE_ACCOUNT_JSON'}",
+    "serviceAccount": "${process.env.GCS_SERVICE_ACCOUNT || 'GCS_SERVICE_ACCOUNT_JSON'}",
     "bucketName": "${process.env.GCS_BUCKET_NAME || 'GCS_BUCKET_NAME'}",
     "bucketLocation": "${process.env.GCS_BUCKET_LOCATION || 'GCS_BUCKET_LOCATION'}",
     "baseUrl": "${process.env.GCS_BASE_URL || 'GCS_BASE_URL'}"
@@ -41,7 +41,6 @@ npm install strapi-provider-upload-google-cloud-storage --save
 5. Save the configuration
 6. Enjoy !
 
-
 ## Optional - Setting up Strapi from environment variable
 
 If you prefer, you can set up the configuration into `config/custom.json` file like this :
@@ -49,7 +48,7 @@ If you prefer, you can set up the configuration into `config/custom.json` file l
 {
   "customConfig": "This configuration is accessible through strapi.config.environments.development.myCustomConfiguration",
   "gcs": {
-    "serviceAccount": "${process.env.GCS_SERVICE_ACCOUNT || 'GCP_SERVICE_ACCOUNT_JSON'}",
+    "serviceAccount": "${process.env.GCS_SERVICE_ACCOUNT || 'GCS_SERVICE_ACCOUNT_JSON'}",
     "bucketName": "${process.env.GCS_BUCKET_NAME || 'GCS_BUCKET_NAME'}",
     "bucketLocation": "${process.env.GCS_BUCKET_LOCATION || 'GCS_BUCKET_LOCATION'}",
     "baseUrl": "${process.env.GCS_BASE_URL || 'GCS_BASE_URL'}"
