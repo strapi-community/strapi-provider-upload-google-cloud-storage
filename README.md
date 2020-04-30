@@ -22,12 +22,25 @@ npm install strapi-provider-upload-google-cloud-storage --save
 
 ## Setting up Strapi upload configuration
 
-1. Copy the full content of the downloaded JSON file
-2. Paste it into the "Service Account JSON" field in Strapi Upload Settings
-3. Set an existing multi-regional Bucket name 
-4. Define a multi-regional location (_Europe_ [eu], _Asia_ [asia] or _United States of America_ [us])
+1.To enable the provider, create or edit the file at ./extensions/upload/config/settings.json
+
+```json
+{
+  "provider": "google-cloud-storage",
+  "providerOptions": {
+    "serviceAccount": "${process.env.GCS_SERVICE_ACCOUNT || 'GCP_SERVICE_ACCOUNT_JSON'}",
+    "bucketName": "${process.env.GCS_BUCKET_NAME || 'GCS_BUCKET_NAME'}",
+    "bucketLocation": "${process.env.GCS_BUCKET_LOCATION || 'GCS_BUCKET_LOCATION'}",
+    "baseUrl": "${process.env.GCS_BASE_URL || 'GCS_BASE_URL'}"
+  }
+}
+```
+2. Copy the full content of the downloaded JSON file from GCP
+2. Set the json value into the "serviceAccount" field using environment variable or paste the json as string. 
+3. Set an existing multi-regional Bucket name into the "bucketLocation" field.
 5. Save the configuration
 6. Enjoy !
+
 
 ## Optional - Setting up Strapi from environment variable
 
@@ -36,19 +49,14 @@ If you prefer, you can set up the configuration into `config/custom.json` file l
 {
   "customConfig": "This configuration is accessible through strapi.config.environments.development.myCustomConfiguration",
   "gcs": {
-    "serviceAccount": "${process.env.GCS_SERVICE_ACCOUNT || GCS Service Account JSON}",
-    "bucketName": "${process.env.GCS_BUCKET_NAME || GCS Bucket Name}",
-    "bucketLocation": "${process.env.GCS_BUCKET_LOCATION || GCS Bucket Location}",
-    "baseUrl": "${process.env.GCS_BASE_URL || GCS Base URL}"
+    "serviceAccount": "${process.env.GCS_SERVICE_ACCOUNT || 'GCP_SERVICE_ACCOUNT_JSON'}",
+    "bucketName": "${process.env.GCS_BUCKET_NAME || 'GCS_BUCKET_NAME'}",
+    "bucketLocation": "${process.env.GCS_BUCKET_LOCATION || 'GCS_BUCKET_LOCATION'}",
+    "baseUrl": "${process.env.GCS_BASE_URL || 'GCS_BASE_URL'}"
   }
 }
 ```
 You can rename the `environment variables` as you like.
-
-#### `bucketLocation` options :
-- us
-- eu
-- asia
 
 #### Bucket `baseUrl` options :
 - https://storage.googleapis.com/{bucket-name}
