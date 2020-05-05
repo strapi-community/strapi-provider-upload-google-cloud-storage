@@ -114,6 +114,8 @@ else {
 
 JSON data provide by Google Account (explained before).
 
+Can be set as a String or JSON Object.
+
 #### `bucketName` :
 
 The name of the bucket on Google Cloud Storage.
