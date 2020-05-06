@@ -22,6 +22,8 @@ yarn install strapi-provider-upload-google-cloud-storage
 
 ## Create your Bucket on Google Cloud Storage
 
+The bucket should be created with **fine grained** access control, as the plugin will configure uploaded files with public read access.
+
 ## Setting up Google authentification
 
 1. In the GCP Console, go to the **Create service account key** page.. 
@@ -105,6 +107,32 @@ else {
   module.exports = {
     provider: 'local'
   };
+}
+```
+
+**Overriding `uploadProvider` config with `gcs` key in Strapi custom config**
+
+Contents of `gcs` key in Strapi custom config, if set, will be merged over `./extensions/upload/config/settings.json`,
+
+`./config/custom.json` (config items set here will be merged over, overriding config set at `./extensions/upload/config/settings.json`)
+```json
+{
+  "gcs" : {
+    "serviceAccount": "<Your serviceAccount JSON object here>",
+    "bucketName": "Bucket-name",
+    "baseUrl": "https://storage.googleapis.com/{bucket-name}"
+  }
+}
+```
+
+`./config/environments/<development|staging|production>/custom.json` (config items set here will be merged over and override the previous ones)
+```json
+{
+  "gcs" : {
+    "serviceAccount": "<Your serviceAccount JSON object here>",
+    "bucketName": "Bucket-name",
+    "baseUrl": "https://storage.googleapis.com/{bucket-name}"
+  }
 }
 ```
 
