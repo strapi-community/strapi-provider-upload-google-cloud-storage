@@ -1,5 +1,5 @@
 const { strict: assert } = require('assert');
-const { checkServiceAccount } = require('../../lib/provider');
+const { checkServiceAccount, checkBucket } = require('../../lib/provider');
 
 describe('/lib/provider.js', () => {
   describe('#checkServiceAccount', () => {
@@ -143,6 +143,56 @@ describe('/lib/provider.js', () => {
         };
         checkServiceAccount(config);
         assert.equal(config.baseUrl, 'http://localhost');
+      });
+    });
+  });
+
+  describe('#checkBucket', () => {
+    describe('when valid bucket', () => {
+      it('must check if bucket exists', async () => {
+        let assertCount = 0;
+
+        const gcsMock = {
+          bucket(bucketName) {
+            assertCount += 1;
+            assert.equal(bucketName, 'my-bucket');
+            return {
+              async exists() {
+                assertCount += 1;
+                return [true];
+              },
+            };
+          },
+        };
+        await assert.doesNotReject(checkBucket(gcsMock, 'my-bucket'));
+        assert.equal(assertCount, 2);
+      });
+    });
+
+    describe('when bucket does not exists', async () => {
+      it('must throw error message', async () => {
+        let assertCount = 0;
+
+        const gcsMock = {
+          bucket(bucketName) {
+            assertCount += 1;
+            assert.equal(bucketName, 'my-bucket');
+            return {
+              async exists() {
+                assertCount += 1;
+                return [false];
+              },
+            };
+          },
+        };
+
+        const error = new Error(
+          'An error occurs when we try to retrieve the Bucket "my-bucket". Check if bucket exist on Google Cloud Platform.'
+        );
+
+        await assert.rejects(checkBucket(gcsMock, 'my-bucket'), error);
+
+        assert.equal(assertCount, 2);
       });
     });
   });
