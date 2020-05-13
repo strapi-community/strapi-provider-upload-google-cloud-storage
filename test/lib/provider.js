@@ -1,5 +1,5 @@
 const { strict: assert } = require('assert');
-const { checkServiceAccount, checkBucket } = require('../../lib/provider');
+const { checkServiceAccount, checkBucket, mergeConfigs } = require('../../lib/provider');
 
 describe('/lib/provider.js', () => {
   describe('#checkServiceAccount', () => {
@@ -194,6 +194,66 @@ describe('/lib/provider.js', () => {
 
         assert.equal(assertCount, 2);
       });
+    });
+  });
+
+  describe('#mergeConfigs', () => {
+    let strapiOriginal;
+
+    beforeEach(() => {
+      strapiOriginal = global.strapi;
+    });
+
+    afterEach(() => {
+      if (strapiOriginal === undefined) {
+        delete global.strapi;
+      } else {
+        global.strapi = strapiOriginal;
+      }
+    });
+
+    it('must apply configurations', () => {
+      global.strapi = {
+        config: {
+          currentEnvironment: {
+          },
+        },
+      };
+      const result = mergeConfigs({ foo: 'bar' });
+      const expected = { foo: 'bar' };
+      assert.deepEqual(result, expected);
+    });
+
+    it('must merge with strapi.config.cgs global vars', () => {
+      global.strapi = {
+        config: {
+          gcs: {
+            number: 910,
+            foo: 'thanos',
+          },
+          currentEnvironment: {
+          },
+        },
+      };
+      const result = mergeConfigs({ foo: 'bar', key: 'value' });
+      const expected = { key: 'value', foo: 'thanos', number: 910 };
+      assert.deepEqual(result, expected);
+    });
+
+    it('must merge with strapi.config.currentEnvironment.gcs vars', () => {
+      global.strapi = {
+        config: {
+          currentEnvironment: {
+            gcs: {
+              number: 910,
+              foo: 'thanos',
+            },
+          },
+        },
+      };
+      const result = mergeConfigs({ foo: 'bar', key: 'value' });
+      const expected = { key: 'value', foo: 'thanos', number: 910 };
+      assert.deepEqual(result, expected);
     });
   });
 });
