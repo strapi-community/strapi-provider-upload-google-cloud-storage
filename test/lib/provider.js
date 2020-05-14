@@ -1,5 +1,6 @@
 const { strict: assert } = require('assert');
-const { checkServiceAccount, checkBucket, mergeConfigs } = require('../../lib/provider');
+const mockRequire = require('mock-require');
+const { checkServiceAccount, checkBucket, mergeConfigs, init } = require('../../lib/provider');
 
 describe('/lib/provider.js', () => {
   describe('#checkServiceAccount', () => {
@@ -215,8 +216,7 @@ describe('/lib/provider.js', () => {
     it('must apply configurations', () => {
       global.strapi = {
         config: {
-          currentEnvironment: {
-          },
+          currentEnvironment: {},
         },
       };
       const result = mergeConfigs({ foo: 'bar' });
@@ -231,8 +231,7 @@ describe('/lib/provider.js', () => {
             number: 910,
             foo: 'thanos',
           },
-          currentEnvironment: {
-          },
+          currentEnvironment: {},
         },
       };
       const result = mergeConfigs({ foo: 'bar', key: 'value' });
@@ -254,6 +253,247 @@ describe('/lib/provider.js', () => {
       const result = mergeConfigs({ foo: 'bar', key: 'value' });
       const expected = { key: 'value', foo: 'thanos', number: 910 };
       assert.deepEqual(result, expected);
+    });
+  });
+
+  describe('#init', () => {
+    let strapiOriginal;
+
+    beforeEach(() => {
+      strapiOriginal = global.strapi;
+
+      global.strapi = {
+        config: {
+          currentEnvironment: {},
+        },
+        log: {
+          info() {},
+          debug() {},
+        },
+      };
+    });
+
+    afterEach(() => {
+      if (strapiOriginal === undefined) {
+        delete global.strapi;
+      } else {
+        global.strapi = strapiOriginal;
+      }
+    });
+
+    it('must return an object with upload and delete methods', () => {
+      const config = {
+        serviceAccount: {
+          project_id: '123',
+          client_email: 'my@email.org',
+          private_key: 'a random key',
+        },
+        bucketName: 'any',
+      };
+
+      const result = init(config);
+
+      assert.ok(Object.keys(result).includes('upload'));
+      assert.equal(typeof result.upload, 'function');
+      assert.ok(Object.keys(result).includes('delete'));
+      assert.equal(typeof result.delete, 'function');
+    });
+
+    it('must instanciate google cloud storage with right configurations', () => {
+      let assertionsCount = 0;
+      mockRequire('@google-cloud/storage', {
+        Storage: class {
+          constructor(...args) {
+            assertionsCount += 1;
+            assert.deepEqual(args, [
+              {
+                credentials: {
+                  client_email: 'my@email.org',
+                  private_key: 'a random key',
+                },
+                projectId: '123',
+              },
+            ]);
+          }
+        },
+      });
+      const provider = mockRequire.reRequire('../../lib/provider');
+      const config = {
+        serviceAccount: {
+          project_id: '123',
+          client_email: 'my@email.org',
+          private_key: 'a random key',
+        },
+        bucketName: 'any',
+      };
+      const result = provider.init(config);
+      assert.equal(assertionsCount, 1);
+      mockRequire.stop('@google-cloud/storage');
+    });
+
+    describe('when execute #upload', () => {
+      let assertionsCount;
+
+      beforeEach(() => {
+        assertionsCount = 0;
+      });
+
+      afterEach(() => {});
+
+      describe('when bucket exists', () => {
+        const createBucketMock = ({ fileMock, expectedFileNames }) => ({
+          file(fileName) {
+            assertionsCount += 1;
+            assert.equal(fileName, expectedFileNames.shift());
+            return fileMock;
+          },
+          async exists() {
+            assertionsCount += 1;
+            return [true];
+          },
+        });
+
+        describe('when file DOES NOT exists in bucket', () => {
+          const createFileMock = ({ saveExpectedArgs }) => ({
+            async exists() {
+              assertionsCount += 1;
+              return [false];
+            },
+            async save(...args) {
+              assertionsCount += 1;
+              assert.deepEqual(args, saveExpectedArgs);
+              return [true];
+            },
+          });
+
+          it('must save file', async () => {
+            const fileData = {
+              ext: '.JPEG',
+              buffer: 'file buffer information',
+              mime: 'image/jpeg',
+              name: 'people coding.JPEG',
+              related: [
+                {
+                  ref: 'ref',
+                },
+              ],
+              hash: '4l0ngH45h',
+              path: '/tmp/strapi',
+            };
+
+            const saveExpectedArgs = [
+              'file buffer information',
+              {
+                contentType: 'image/jpeg',
+                metadata: {
+                  contentDisposition: 'inline; filename="people coding.JPEG"',
+                },
+                public: true,
+              },
+            ];
+
+            const fileMock = createFileMock({ saveExpectedArgs });
+            const expectedFileNames = [
+              '/tmp/strapi/people-coding.JPEG_4l0ngH45h.jpeg',
+              '/tmp/strapi/people-coding.JPEG_4l0ngH45h.jpeg',
+            ];
+            const bucketMock = createBucketMock({ fileMock, expectedFileNames });
+            const Storage = class {
+              bucket(bucketName) {
+                assertionsCount += 1;
+                assert.equal(bucketName, 'any bucket');
+                return bucketMock;
+              }
+            };
+
+            mockRequire('@google-cloud/storage', { Storage });
+            const provider = mockRequire.reRequire('../../lib/provider');
+            const config = {
+              serviceAccount: {
+                project_id: '123',
+                client_email: 'my@email.org',
+                private_key: 'a random key',
+              },
+              bucketName: 'any bucket',
+            };
+            const providerInstance = provider.init(config);
+            await providerInstance.upload(fileData);
+            assert.equal(assertionsCount, 8);
+            mockRequire.stop('@google-cloud/storage');
+          });
+        });
+
+        describe('when file exists in bucket', () => {
+          const createFileMock = ({ saveExpectedArgs }) => ({
+            async exists() {
+              assertionsCount += 1;
+              return [true];
+            },
+            async delete() {
+              assertionsCount += 1;
+              return true;
+            },
+            async save(...args) {
+              assertionsCount += 1;
+              assert.deepEqual(args, saveExpectedArgs);
+              return [true];
+            },
+          });
+
+          it('must delete file before write it', async () => {
+            const fileData = {
+              ext: '.JPEG',
+              buffer: 'file buffer information',
+              mime: 'image/jpeg',
+              name: 'people coding.JPEG',
+              related: [],
+              hash: '4l0ngH45h',
+              url: 'https://cloud.google.com/images/people-coding.jpeg',
+            };
+
+            const saveExpectedArgs = [
+              'file buffer information',
+              {
+                contentType: 'image/jpeg',
+                metadata: {
+                  contentDisposition: 'inline; filename="people coding.JPEG"',
+                },
+                public: true,
+              },
+            ];
+
+            const fileMock = createFileMock({ saveExpectedArgs });
+            const expectedFileNames = [
+              '4l0ngH45h/people-coding.JPEG_4l0ngH45h.jpeg',
+              'https://cloud.google.com/images/people-coding.jpeg',
+              '4l0ngH45h/people-coding.JPEG_4l0ngH45h.jpeg',
+            ];
+            const bucketMock = createBucketMock({ fileMock, expectedFileNames });
+            const Storage = class {
+              bucket(bucketName) {
+                assertionsCount += 1;
+                assert.equal(bucketName, 'any bucket');
+                return bucketMock;
+              }
+            };
+
+            mockRequire('@google-cloud/storage', { Storage });
+            const provider = mockRequire.reRequire('../../lib/provider');
+            const config = {
+              serviceAccount: {
+                project_id: '123',
+                client_email: 'my@email.org',
+                private_key: 'a random key',
+              },
+              bucketName: 'any bucket',
+            };
+            const providerInstance = provider.init(config);
+            await providerInstance.upload(fileData);
+            assert.equal(assertionsCount, 11);
+            mockRequire.stop('@google-cloud/storage');
+          });
+        });
+      });
     });
   });
 });
