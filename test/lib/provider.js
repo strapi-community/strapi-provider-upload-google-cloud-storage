@@ -338,8 +338,6 @@ describe('/lib/provider.js', () => {
         assertionsCount = 0;
       });
 
-      afterEach(() => {});
-
       describe('when bucket exists', () => {
         const createBucketMock = ({ fileMock, expectedFileNames }) => ({
           file(fileName) {
