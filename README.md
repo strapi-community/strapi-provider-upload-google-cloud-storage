@@ -20,26 +20,34 @@ or `yarn`
 yarn install strapi-provider-upload-google-cloud-storage
 ```
 
-## Create your Bucket on Google Cloud Storage
+## <a name="create-bucket"></a> Create your Bucket on Google Cloud Storage
 
 The bucket should be created with **fine grained** access control, as the plugin will configure uploaded files with public read access.
 
-## Setting up Google authentification
+### How to create a bucket ?
+- https://cloud.google.com/storage/docs/creating-buckets
+
+### Where my bucket can be located ?
+- https://cloud.google.com/storage/docs/locations
+
+## Setting up Google authentication
 
 1. In the GCP Console, go to the **Create service account key** page.. 
     - **[Go to the create service account key page](https://console.cloud.google.com/apis/credentials/serviceaccountkey)**
 2. From the **Service account** list, select **New service account**.
 3. In the **Service account name** field, enter a name.
-4. From the **Role** list, select **Storage > Administrator**.   
-5. Click **Create**. A JSON file that contains your key downloads to your computer.
+4. From the **Role** list, select **Cloud Storage > Storage Admin**.
+5. Select `JSON` for **Key Type**
+6. Click **Create**. A JSON file that contains your key downloads to your computer.
 
 ## Setting up the a configuration file
 
-You will find below 3 examples of configurations, for each example :
+You will find below many examples of configurations, for each example :
 1. Copy the full content of the downloaded JSON file
 2. Open the configuration file 
-3. Paste it into the "Service Account JSON" field 
-4. Set the `Bucket-name` field
+3. Paste it into the "Service Account JSON" field (as `string` or `JSON`, be careful with indentation)
+4. Set the `bucketName` field and replace `Bucket-name` by yours [previously create](#create-bucket)
+5. Default `baseUrl` is working, but you can replace it by yours (if you use a custom baseUrl)
 6. Save the configuration file
 7. Enjoy !
 
@@ -50,7 +58,7 @@ You will find below 3 examples of configurations, for each example :
 {
   "provider": "google-cloud-storage",
   "providerOptions": {
-    "serviceAccount": "Service Account JSON",
+    "serviceAccount": "<Your serviceAccount JSON object/string here>",
     "bucketName": "Bucket-name",
     "baseUrl": "https://storage.googleapis.com/{bucket-name}"
   }
@@ -64,7 +72,7 @@ You will find below 3 examples of configurations, for each example :
 {
   "provider": "google-cloud-storage",
   "providerOptions": {
-    "serviceAccount": "${process.env.GCS_SERVICE_ACCOUNT || Service Account JSON}",
+    "serviceAccount": "${process.env.GCS_SERVICE_ACCOUNT || <Your serviceAccount JSON object/string here>}",
     "bucketName": "${process.env.GCS_BUCKET_NAME || Bucket-name}",
     "baseUrl": "${process.env.GCS_BASE_URL || https://storage.googleapis.com/{bucket-name}}"
   }
@@ -79,13 +87,13 @@ All variable are optional, you can setting up only `bucketName` if you need to c
 `./extensions/upload/config/settings.js`
 ```js
 const stagingProviderOptions = {
-  serviceAccount: 'Service Account JSON', // json configuration 
+  serviceAccount: '<Your serviceAccount JSON object/string here>', // json configuration 
     bucketName: 'Bucket-name', // name of the bucket
     baseUrl: 'https://storage.googleapis.com/{bucket-name}'
 };
 
 const productionProviderOptions = {
-  serviceAccount: 'Service Account JSON', // json configuration 
+  serviceAccount: '<Your serviceAccount JSON object/string here>', // json configuration 
   bucketName: 'Bucket-name', // name of the bucket
   baseUrl: 'https://storage.googleapis.com/{bucket-name}'
 };
@@ -118,7 +126,7 @@ Contents of `gcs` key in Strapi custom config, if set, will be merged over `./ex
 ```json
 {
   "gcs" : {
-    "serviceAccount": "<Your serviceAccount JSON object here>",
+    "serviceAccount": "<Your serviceAccount JSON object/string here>",
     "bucketName": "Bucket-name",
     "baseUrl": "https://storage.googleapis.com/{bucket-name}"
   }
@@ -129,7 +137,7 @@ Contents of `gcs` key in Strapi custom config, if set, will be merged over `./ex
 ```json
 {
   "gcs" : {
-    "serviceAccount": "<Your serviceAccount JSON object here>",
+    "serviceAccount": "<Your serviceAccount JSON object/string here>",
     "bucketName": "Bucket-name",
     "baseUrl": "https://storage.googleapis.com/{bucket-name}"
   }
@@ -147,8 +155,7 @@ Can be set as a String or JSON Object.
 #### `bucketName` :
 
 The name of the bucket on Google Cloud Storage.
-You can find more information about it here : 
-- https://cloud.google.com/storage/docs/locations?hl=fr
+You can find more information on Google Cloud documentation.
 
 #### `baseUrl` :
 
