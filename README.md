@@ -2,7 +2,6 @@
 
 [![npm version](https://img.shields.io/npm/v/strapi-provider-upload-google-cloud-storage.svg)](https://www.npmjs.org/package/strapi-provider-upload-google-cloud-storage)
 [![npm downloads](https://img.shields.io/npm/dm/strapi-provider-upload-google-cloud-storage.svg)](https://www.npmjs.org/package/strapi-provider-upload-google-cloud-storage)
-[![npm dependencies](https://david-dm.org/strapi/strapi-provider-upload-google-cloud-storage.svg)](https://david-dm.org/Lith/strapi-provider-upload-google-cloud-storage)
 
 **Non-Official** Google Cloud Storage Provider for Strapi Upload
 
@@ -17,7 +16,7 @@ npm install strapi-provider-upload-google-cloud-storage --save
 
 or `yarn`
 ```
-yarn install strapi-provider-upload-google-cloud-storage
+yarn add strapi-provider-upload-google-cloud-storage
 ```
 
 ## <a name="create-bucket"></a> Create your Bucket on Google Cloud Storage
@@ -166,8 +165,8 @@ Define your base Url, first is default value :
 
 ## Important information
 
-From release `3.0.0-beta.20` the bucketLocation is no longer supported.
-The plugin will not create automatically the bucket, you need to configure it.
+From release `3.0.0-beta.20` the `bucketLocation` is no longer supported.
+The plugin will not create the bucket, you need to configure it before.
 
 ## Resources
 
