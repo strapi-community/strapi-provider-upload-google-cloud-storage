@@ -3,15 +3,13 @@
     "node": true,
     "es6": true
   },
-  "plugins": [
-  "prettier"
-  ],
+  "plugins": ["prettier"],
   "extends": [
-  "eslint:recommended",
-  "prettier",
-  "plugin:import/errors",
-  "plugin:import/warnings",
-  "plugin:node/recommended"
+    "eslint:recommended",
+    "prettier",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:node/recommended"
   ],
   "globals": {
     "Atomics": "readonly",
