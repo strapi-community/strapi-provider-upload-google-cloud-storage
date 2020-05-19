@@ -1,0 +1,28 @@
+{
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "plugins": ["prettier"],
+  "extends": [
+    "eslint:recommended",
+    "prettier",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:node/recommended"
+  ],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly",
+    "strapi": "readonly"
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018
+  },
+  "rules": {
+    "prettier/prettier": 1,
+    "node/no-unpublished-require": 0,
+    "require-atomic-updates": 0,
+    "no-process-exit": 0
+  }
+}
