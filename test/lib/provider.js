@@ -427,7 +427,7 @@ describe('/lib/provider.js', () => {
             };
             const providerInstance = provider.init(config);
             await providerInstance.upload(fileData);
-            assert.equal(assertionsCount, 7);
+            assert.equal(assertionsCount, 6);
             mockRequire.stop('@google-cloud/storage');
           });
 
