@@ -34,6 +34,17 @@ describe('/lib/provider.js', () => {
 
       it('must throw error when serviceAccount does not accoplish with correct values', () => {
         const config = {
+          serviceAccount: "I'm not a valid JSON",
+          bucketName: 'some-bucket',
+        };
+        const error = new Error(
+          'Error parsing data "Service Account JSON", please be sure to copy/paste the full JSON file.'
+        );
+        assert.throws(() => checkServiceAccount(config), error);
+      });
+
+      it('must throw error when serviceAccount does not accoplish with correct values', () => {
+        const config = {
           serviceAccount: {},
           bucketName: 'some-bucket',
         };
