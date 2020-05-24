@@ -38,7 +38,7 @@ describe('/lib/provider.js', () => {
           bucketName: 'some-bucket',
         };
         const error = new Error(
-          'Error parsing data "Service Account JSON", please be sure to copy/paste the full JSON file.'
+          'Error parsing data "Service Account JSON". Missing "project_id" field in JSON file.'
         );
         assert.throws(() => checkServiceAccount(config), error);
       });
@@ -49,7 +49,7 @@ describe('/lib/provider.js', () => {
           bucketName: 'some-bucket',
         };
         const error = new Error(
-          'Error parsing data "Service Account JSON", please be sure to copy/paste the full JSON file.'
+          'Error parsing data "Service Account JSON". Missing "project_id" field in JSON file.'
         );
         assert.throws(() => checkServiceAccount(config), error);
       });
@@ -62,7 +62,7 @@ describe('/lib/provider.js', () => {
           bucketName: 'some-bucket',
         };
         const error = new Error(
-          'Error parsing data "Service Account JSON", please be sure to copy/paste the full JSON file.'
+          'Error parsing data "Service Account JSON". Missing "client_email" field in JSON file.'
         );
         assert.throws(() => checkServiceAccount(config), error);
       });
@@ -76,7 +76,7 @@ describe('/lib/provider.js', () => {
           bucketName: 'some-bucket',
         };
         const error = new Error(
-          'Error parsing data "Service Account JSON", please be sure to copy/paste the full JSON file.'
+          'Error parsing data "Service Account JSON". Missing "private_key" field in JSON file.'
         );
         assert.throws(() => checkServiceAccount(config), error);
       });
@@ -87,7 +87,7 @@ describe('/lib/provider.js', () => {
           bucketName: 'some-bucket',
         };
         const error = new Error(
-          'Error parsing data "Service Account JSON", please be sure to copy/paste the full JSON file.'
+          'Error parsing data "Service Account JSON". Missing "private_key" field in JSON file.'
         );
         assert.throws(() => checkServiceAccount(config), error);
       });
@@ -447,7 +447,7 @@ describe('/lib/provider.js', () => {
                   height: 156,
                   size: 5.53,
                   buffer: 'file buffer information',
-                  path: null
+                  path: null,
                 },
               ],
               [
@@ -460,13 +460,11 @@ describe('/lib/provider.js', () => {
                   ext: '.jpeg',
                   mime: 'image/jpeg',
                   size: 897.78,
-                  related: [
-                    { refId: '1', ref: 'galleries', source: undefined, field: 'cover' }
-                    ],
+                  related: [{ refId: '1', ref: 'galleries', source: undefined, field: 'cover' }],
                   width: 4373,
                   height: 2915,
                   buffer: 'file buffer data',
-                  },
+                },
               ],
               [
                 'thumbnail_boris-smokrovic_9fd5439b3e/undefined_thumbnail_boris-smokrovic_9fd5439b3e.jpeg',
@@ -478,8 +476,8 @@ describe('/lib/provider.js', () => {
                   height: 156,
                   size: 8.18,
                   buffer: 'file buffer data',
-                  path: null
-                  },
+                  path: null,
+                },
               ],
             ];
 
@@ -492,7 +490,7 @@ describe('/lib/provider.js', () => {
                 },
                 async save() {
                   assert.equal(lastFileName, expectedFileName);
-                }
+                },
               };
 
               const bucketMock = {
@@ -502,7 +500,7 @@ describe('/lib/provider.js', () => {
                 file(fileName) {
                   lastFileName = fileName;
                   return fileMock;
-                }
+                },
               };
 
               const Storage = class {
