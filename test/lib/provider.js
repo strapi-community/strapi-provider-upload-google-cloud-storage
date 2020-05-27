@@ -1,6 +1,12 @@
 const { strict: assert } = require('assert');
 const mockRequire = require('mock-require');
-const { checkServiceAccount, checkBucket, mergeConfigs, init } = require('../../lib/provider');
+const {
+  checkServiceAccount,
+  checkBucket,
+  mergeConfigs,
+  generateUploadFileName,
+  init,
+} = require('../../lib/provider');
 
 describe('/lib/provider.js', () => {
   describe('#checkServiceAccount', () => {
@@ -267,6 +273,82 @@ describe('/lib/provider.js', () => {
     });
   });
 
+  describe('#generateUploadFileName', () => {
+    it('must save filename in right name', async () => {
+      const testData = [
+        [
+          '',
+          'christopher-campbell_df9a53d774/christopher-campbell_christopher-campbell_df9a53d774.jpeg',
+          {
+            name: 'christopher-campbell',
+            alternativeText: undefined,
+            caption: undefined,
+            hash: 'christopher-campbell_df9a53d774',
+            ext: '.jpeg',
+            mime: 'image/jpeg',
+            size: 823.58,
+            width: 5184,
+            height: 3456,
+            buffer: 'file buffer information',
+          },
+        ],
+        [
+          '',
+          'thumbnail_christopher-campbell_df9a53d774/undefined_thumbnail_christopher-campbell_df9a53d774.jpeg',
+          {
+            hash: 'thumbnail_christopher-campbell_df9a53d774',
+            ext: '.jpeg',
+            mime: 'image/jpeg',
+            width: 234,
+            height: 156,
+            size: 5.53,
+            buffer: 'file buffer information',
+            path: null,
+          },
+        ],
+        [
+          'base-path/',
+          'base-path/galleries/boris-smokrovic_boris-smokrovic_9fd5439b3e.jpeg',
+          {
+            name: 'boris-smokrovic',
+            alternativeText: undefined,
+            caption: undefined,
+            hash: 'boris-smokrovic_9fd5439b3e',
+            ext: '.jpeg',
+            mime: 'image/jpeg',
+            size: 897.78,
+            related: [{ refId: '1', ref: 'galleries', source: undefined, field: 'cover' }],
+            width: 4373,
+            height: 2915,
+            buffer: 'file buffer data',
+          },
+        ],
+        [
+          'root/child/',
+          'root/child/thumbnail_boris-smokrovic_9fd5439b3e/undefined_thumbnail_boris-smokrovic_9fd5439b3e.jpeg',
+          {
+            hash: 'thumbnail_boris-smokrovic_9fd5439b3e',
+            ext: '.jpeg',
+            mime: 'image/jpeg',
+            width: 234,
+            height: 156,
+            size: 8.18,
+            buffer: 'file buffer data',
+            path: null,
+          },
+        ],
+      ];
+
+      const runTest = async ([basePath, expectedFileName, fileData]) => {
+        const generatedFileName = generateUploadFileName(basePath, fileData);
+        assert.equal(expectedFileName, generatedFileName);
+      };
+
+      const promises = testData.map((data) => runTest(data));
+      await Promise.all(promises);
+    });
+  });
+
   describe('#init', () => {
     let strapiOriginal;
 
@@ -429,114 +511,6 @@ describe('/lib/provider.js', () => {
             await providerInstance.upload(fileData);
             assert.equal(assertionsCount, 6);
             mockRequire.stop('@google-cloud/storage');
-          });
-
-          it('must save filename in right name', async () => {
-            const testData = [
-              [
-                'christopher-campbell_df9a53d774/christopher-campbell_christopher-campbell_df9a53d774.jpeg',
-                {
-                  name: 'christopher-campbell',
-                  alternativeText: undefined,
-                  caption: undefined,
-                  hash: 'christopher-campbell_df9a53d774',
-                  ext: '.jpeg',
-                  mime: 'image/jpeg',
-                  size: 823.58,
-                  width: 5184,
-                  height: 3456,
-                  buffer: 'file buffer information',
-                },
-              ],
-              [
-                'thumbnail_christopher-campbell_df9a53d774/undefined_thumbnail_christopher-campbell_df9a53d774.jpeg',
-                {
-                  hash: 'thumbnail_christopher-campbell_df9a53d774',
-                  ext: '.jpeg',
-                  mime: 'image/jpeg',
-                  width: 234,
-                  height: 156,
-                  size: 5.53,
-                  buffer: 'file buffer information',
-                  path: null,
-                },
-              ],
-              [
-                'galleries/boris-smokrovic_boris-smokrovic_9fd5439b3e.jpeg',
-                {
-                  name: 'boris-smokrovic',
-                  alternativeText: undefined,
-                  caption: undefined,
-                  hash: 'boris-smokrovic_9fd5439b3e',
-                  ext: '.jpeg',
-                  mime: 'image/jpeg',
-                  size: 897.78,
-                  related: [{ refId: '1', ref: 'galleries', source: undefined, field: 'cover' }],
-                  width: 4373,
-                  height: 2915,
-                  buffer: 'file buffer data',
-                },
-              ],
-              [
-                'thumbnail_boris-smokrovic_9fd5439b3e/undefined_thumbnail_boris-smokrovic_9fd5439b3e.jpeg',
-                {
-                  hash: 'thumbnail_boris-smokrovic_9fd5439b3e',
-                  ext: '.jpeg',
-                  mime: 'image/jpeg',
-                  width: 234,
-                  height: 156,
-                  size: 8.18,
-                  buffer: 'file buffer data',
-                  path: null,
-                },
-              ],
-            ];
-
-            const runTest = async ([expectedFileName, fileData]) => {
-              let lastFileName;
-
-              const fileMock = {
-                async exists() {
-                  return [false];
-                },
-                async save() {
-                  assert.equal(lastFileName, expectedFileName);
-                },
-              };
-
-              const bucketMock = {
-                async exists() {
-                  return [true];
-                },
-                file(fileName) {
-                  lastFileName = fileName;
-                  return fileMock;
-                },
-              };
-
-              const Storage = class {
-                bucket(bucketName) {
-                  return bucketMock;
-                }
-              };
-
-              mockRequire('@google-cloud/storage', { Storage });
-              const provider = mockRequire.reRequire('../../lib/provider');
-              const config = {
-                serviceAccount: {
-                  project_id: '123',
-                  client_email: 'my@email.org',
-                  private_key: 'a random key',
-                },
-                bucketName: 'any bucket',
-              };
-              const providerInstance = provider.init(config);
-              await providerInstance.upload(fileData);
-              mockRequire.stop('@google-cloud/storage');
-            };
-
-            const promises = testData.map((data) => runTest(data));
-            await Promise.all(promises);
           });
         });
 
