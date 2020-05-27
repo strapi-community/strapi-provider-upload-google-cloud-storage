@@ -1,13 +1,9 @@
-name: publish Node.js Package
-
-on:
-  release:
-    types: [created]
+name: Test project
+on: push
 
 jobs:
-  npm-publish:
+  test:
     runs-on: ubuntu-latest
-    branches: master
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
@@ -15,6 +11,4 @@ jobs:
           node-version: '10.x'
           registry-url: https://registry.npmjs.org/
       - run: npm install
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+      - run: npm run coverage
