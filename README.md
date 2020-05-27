@@ -59,7 +59,8 @@ You will find below many examples of configurations, for each example :
   "providerOptions": {
     "serviceAccount": "<Your serviceAccount JSON object/string here>",
     "bucketName": "Bucket-name",
-    "baseUrl": "https://storage.googleapis.com/{bucket-name}"
+    "baseUrl": "https://storage.googleapis.com/{bucket-name}",
+    "publicFiles": true
   }
 }
 ```
@@ -73,7 +74,8 @@ You will find below many examples of configurations, for each example :
   "providerOptions": {
     "serviceAccount": "${process.env.GCS_SERVICE_ACCOUNT || <Your serviceAccount JSON object/string here>}",
     "bucketName": "${process.env.GCS_BUCKET_NAME || Bucket-name}",
-    "baseUrl": "${process.env.GCS_BASE_URL || https://storage.googleapis.com/{bucket-name}}"
+    "baseUrl": "${process.env.GCS_BASE_URL || https://storage.googleapis.com/{bucket-name}}",
+    "publicFiles": true
   }
 }
 ```
@@ -87,14 +89,16 @@ All variable are optional, you can setting up only `bucketName` if you need to c
 ```js
 const stagingProviderOptions = {
   serviceAccount: '<Your serviceAccount JSON object/string here>', // json configuration 
-    bucketName: 'Bucket-name', // name of the bucket
-    baseUrl: 'https://storage.googleapis.com/{bucket-name}'
+  bucketName: 'Bucket-name', // name of the bucket
+  baseUrl: 'https://storage.googleapis.com/{bucket-name}',
+  publicFiles: false
 };
 
 const productionProviderOptions = {
   serviceAccount: '<Your serviceAccount JSON object/string here>', // json configuration 
   bucketName: 'Bucket-name', // name of the bucket
-  baseUrl: 'https://storage.googleapis.com/{bucket-name}'
+  baseUrl: 'https://storage.googleapis.com/{bucket-name}',
+  publicFiles: true
 };
 
 
@@ -127,7 +131,8 @@ Contents of `gcs` key in Strapi custom config, if set, will be merged over `./ex
   "gcs" : {
     "serviceAccount": "<Your serviceAccount JSON object/string here>",
     "bucketName": "Bucket-name",
-    "baseUrl": "https://storage.googleapis.com/{bucket-name}"
+    "baseUrl": "https://storage.googleapis.com/{bucket-name}",
+    "publicFiles": true
   }
 }
 ```
@@ -138,7 +143,8 @@ Contents of `gcs` key in Strapi custom config, if set, will be merged over `./ex
   "gcs" : {
     "serviceAccount": "<Your serviceAccount JSON object/string here>",
     "bucketName": "Bucket-name",
-    "baseUrl": "https://storage.googleapis.com/{bucket-name}"
+    "baseUrl": "https://storage.googleapis.com/{bucket-name}",
+    "publicFiles": true
   }
 }
 ```
@@ -162,6 +168,10 @@ Define your base Url, first is default value :
 - https://storage.googleapis.com/{bucket-name}
 - https://{bucket-name}
 - http://{bucket-name}
+
+#### `publicFiles`:
+
+Boolean atribute to define public attribute to file when it is upload to storage.
 
 ## Important information
 
