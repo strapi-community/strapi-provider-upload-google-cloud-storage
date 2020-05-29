@@ -4,6 +4,7 @@
 
 | Version | Supported          |
 | ------- | ------------------ |
+| 3.0.0   | :white_check_mark: |
 | 3.0.0-beta.20.x   | :white_check_mark: |
 | < 3.0.0-beta.19.x   | :x: |
 
