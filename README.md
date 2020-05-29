@@ -60,6 +60,7 @@ You will find below many examples of configurations, for each example :
     "serviceAccount": "<Your serviceAccount JSON object/string here>",
     "bucketName": "Bucket-name",
     "baseUrl": "https://storage.googleapis.com/{bucket-name}",
+    "basePath": "/",
     "publicFiles": true
   }
 }
@@ -75,6 +76,7 @@ You will find below many examples of configurations, for each example :
     "serviceAccount": "${process.env.GCS_SERVICE_ACCOUNT || <Your serviceAccount JSON object/string here>}",
     "bucketName": "${process.env.GCS_BUCKET_NAME || Bucket-name}",
     "baseUrl": "${process.env.GCS_BASE_URL || https://storage.googleapis.com/{bucket-name}}",
+    "basePath": "",
     "publicFiles": true
   }
 }
@@ -91,6 +93,7 @@ const stagingProviderOptions = {
   serviceAccount: '<Your serviceAccount JSON object/string here>', // json configuration 
   bucketName: 'Bucket-name', // name of the bucket
   baseUrl: 'https://storage.googleapis.com/{bucket-name}',
+  basePath: '/staging',
   publicFiles: false
 };
 
@@ -98,6 +101,7 @@ const productionProviderOptions = {
   serviceAccount: '<Your serviceAccount JSON object/string here>', // json configuration 
   bucketName: 'Bucket-name', // name of the bucket
   baseUrl: 'https://storage.googleapis.com/{bucket-name}',
+  basePath: '/production',
   publicFiles: true
 };
 
@@ -168,6 +172,10 @@ Define your base Url, first is default value :
 - https://storage.googleapis.com/{bucket-name}
 - https://{bucket-name}
 - http://{bucket-name}
+
+#### `basePath` :
+
+Define base path to save each media document.
 
 #### `publicFiles`:
 
