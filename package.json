@@ -1,6 +1,6 @@
 {
   "name": "strapi-provider-upload-google-cloud-storage",
-  "version": "3.0.0-beta.20.3",
+  "version": "3.0.0",
   "description": "(Non-official) Google Cloud Storage Provider for Strapi Upload",
   "directories": {
     "lib": "./lib"
@@ -48,7 +48,7 @@
   "dependencies": {
     "@google-cloud/storage": "^4.7.0",
     "slugify": "^1.4.0",
-    "strapi": "^3.0.0-beta.20.3"
+    "strapi": "^3.0.0"
   },
   "devDependencies": {
     "eslint": "^7.0.0",
