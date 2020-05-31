@@ -15,4 +15,5 @@ jobs:
           node-version: '10.x'
           registry-url: https://registry.npmjs.org/
       - run: npm install
+      - run: npm run lint
       - run: npm run coverage
