@@ -2,6 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/strapi-provider-upload-google-cloud-storage.svg)](https://www.npmjs.org/package/strapi-provider-upload-google-cloud-storage)
 [![npm downloads](https://img.shields.io/npm/dm/strapi-provider-upload-google-cloud-storage.svg)](https://www.npmjs.org/package/strapi-provider-upload-google-cloud-storage)
+[![coverage](https://img.shields.io/codecov/c/gh/lith/strapi-provider-upload-google-cloud-storage/master)](https://www.npmjs.org/package/strapi-provider-upload-google-cloud-storage)
 
 **Non-Official** Google Cloud Storage Provider for Strapi Upload
 
