@@ -19,6 +19,13 @@ We are using [GitHub Issues](https://github.com/Lith/strapi-provider-upload-goog
 
 ---
 
+## Contribution Prerequisites
+
+* You have [Node](https://nodejs.org/en/) at v10.x.x only and [Yarn](https://yarnpkg.com/en/) at v1.2.0+.
+* You are familiar with Git.
+
+This project is using `Yarn` so you need to use it for installation package.
+
 ## Pull Request Process
 
 The team will review your pull request and will either merge it, request changes to it, or close it.
@@ -29,9 +36,11 @@ The team will review your pull request and will either merge it, request changes
     - Run `yarn install` in the repository root.
     - If you’ve fixed a bug or added code that should be tested, add the tests and then link the corresponding issue in either your commit or your PR!
     - Ensure the test suites are passing:
-      - `yarn test`
+      - `yarn test` or `npm run test`
     - Make sure your code lints 
-      - `yarn lint`
+      - `yarn lint` or `npm run lint`
+    - Check coverage report
+      - `yarn coverage` or `npm run coverage`
 2. Update the [README.md](README.md) with details of changes to the interface, this includes new environment 
    variables, exposed ports, useful file locations and container parameters.
 3. You need to Signed-off-by all of your commits before push, like this example :
@@ -46,20 +55,9 @@ The team will review your pull request and will either merge it, request changes
    ```
 4. A team leader will check, suggest modification, approve, merge, and close your request.
 
-## Contribution Prerequisites
-
-* You have [Node](https://nodejs.org/en/) at v10.x.x only and [Yarn](https://yarnpkg.com/en/) at v1.2.0+.
-* You are familiar with Git.
-
 ---
 
 ## Miscellaneous
-
-### Repository Organization
-
-We chose to to use a monorepo design that exploits [Yarn Workspaces](https://yarnpkg.com/en/docs/workspaces) in the way [React](https://github.com/facebook/react/tree/master/packages) or [Babel](https://github.com/babel/babel/tree/master/packages) does. This allows the community to easily maintain the whole ecosystem, keep it up-to-date and consistent.
-
-We do our best to keep the master branch as clean as possible, with tests passing at all times. However, it may happen that the master branch moves faster than the release cycle. Therefore check the [releases on npm](https://www.npmjs.com/package/strapi) so that you're always up-to-date with the latest stable version.
 
 ### Reporting an issue
 
