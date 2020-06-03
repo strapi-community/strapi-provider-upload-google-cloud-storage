@@ -273,408 +273,375 @@ describe('/lib/provider.js', () => {
     });
   });
 
-  describe('#generateUploadFileName', () => {
-    it('must save filename in right name', async () => {
-      const testData = [
-        [
-          '',
-          'christopher-campbell_df9a53d774/christopher-campbell_christopher-campbell_df9a53d774.jpeg',
-          {
-            name: 'christopher-campbell',
-            alternativeText: undefined,
-            caption: undefined,
-            hash: 'christopher-campbell_df9a53d774',
-            ext: '.jpeg',
-            mime: 'image/jpeg',
-            size: 823.58,
-            width: 5184,
-            height: 3456,
-            buffer: 'file buffer information',
-          },
-        ],
-        [
-          '',
-          'thumbnail_christopher-campbell_df9a53d774/undefined_thumbnail_christopher-campbell_df9a53d774.jpeg',
-          {
-            hash: 'thumbnail_christopher-campbell_df9a53d774',
-            ext: '.jpeg',
-            mime: 'image/jpeg',
-            width: 234,
-            height: 156,
-            size: 5.53,
-            buffer: 'file buffer information',
-            path: null,
-          },
-        ],
-        [
-          'base-path/',
-          'base-path/galleries/boris-smokrovic_boris-smokrovic_9fd5439b3e.jpeg',
-          {
-            name: 'boris-smokrovic',
-            alternativeText: undefined,
-            caption: undefined,
-            hash: 'boris-smokrovic_9fd5439b3e',
-            ext: '.jpeg',
-            mime: 'image/jpeg',
-            size: 897.78,
-            related: [{ refId: '1', ref: 'galleries', source: undefined, field: 'cover' }],
-            width: 4373,
-            height: 2915,
-            buffer: 'file buffer data',
-          },
-        ],
-        [
-          'root/child/',
-          'root/child/thumbnail_boris-smokrovic_9fd5439b3e/undefined_thumbnail_boris-smokrovic_9fd5439b3e.jpeg',
-          {
-            hash: 'thumbnail_boris-smokrovic_9fd5439b3e',
-            ext: '.jpeg',
-            mime: 'image/jpeg',
-            width: 234,
-            height: 156,
-            size: 8.18,
-            buffer: 'file buffer data',
-            path: null,
-          },
-        ],
-      ];
+  [true, false].forEach((shortFilePaths) => {
+    describe('#generateUploadFileName', () => {
+      it(`must save filename in right name (shortFilePaths = ${shortFilePaths})`, async () => {
+        const testData = [
+          [
+            '',
+            'christopher-campbell_df9a53d774/christopher-campbell_christopher-campbell_df9a53d774.jpeg',
+            'christopher-campbell_df9a53d774/christopher-campbell_df9a53d774.jpeg',
+            {
+              name: 'christopher-campbell',
+              alternativeText: undefined,
+              caption: undefined,
+              hash: 'christopher-campbell_df9a53d774',
+              ext: '.jpeg',
+              mime: 'image/jpeg',
+              size: 823.58,
+              width: 5184,
+              height: 3456,
+              buffer: 'file buffer information',
+            },
+          ],
+          [
+            '',
+            'thumbnail_christopher-campbell_df9a53d774/undefined_thumbnail_christopher-campbell_df9a53d774.jpeg',
+            'christopher-campbell_df9a53d774/thumbnail_christopher-campbell_df9a53d774.jpeg',
+            {
+              hash: 'thumbnail_christopher-campbell_df9a53d774',
+              ext: '.jpeg',
+              mime: 'image/jpeg',
+              width: 234,
+              height: 156,
+              size: 5.53,
+              buffer: 'file buffer information',
+              path: null,
+            },
+          ],
+          [
+            'base-path/',
+            'base-path/galleries/boris-smokrovic_boris-smokrovic_9fd5439b3e.jpeg',
+            'base-path/boris-smokrovic_9fd5439b3e/boris-smokrovic_9fd5439b3e.jpeg',
+            {
+              name: 'boris-smokrovic',
+              alternativeText: undefined,
+              caption: undefined,
+              hash: 'boris-smokrovic_9fd5439b3e',
+              ext: '.jpeg',
+              mime: 'image/jpeg',
+              size: 897.78,
+              related: [{ refId: '1', ref: 'galleries', source: undefined, field: 'cover' }],
+              width: 4373,
+              height: 2915,
+              buffer: 'file buffer data',
+            },
+          ],
+          [
+            'root/child/',
+            'root/child/thumbnail_boris-smokrovic_9fd5439b3e/undefined_thumbnail_boris-smokrovic_9fd5439b3e.jpeg',
+            'root/child/boris-smokrovic_9fd5439b3e/thumbnail_boris-smokrovic_9fd5439b3e.jpeg',
+            {
+              hash: 'thumbnail_boris-smokrovic_9fd5439b3e',
+              ext: '.jpeg',
+              mime: 'image/jpeg',
+              width: 234,
+              height: 156,
+              size: 8.18,
+              buffer: 'file buffer data',
+              path: null,
+            },
+          ],
+        ];
 
-      const runTest = async ([basePath, expectedFileName, fileData]) => {
-        const generatedFileName = generateUploadFileName(basePath, fileData);
-        assert.equal(expectedFileName, generatedFileName);
-      };
+        const runTest = async ([
+          basePath,
+          expectedFileNameLong,
+          expectedFileNameShort,
+          fileData,
+        ]) => {
+          const generatedFileName = generateUploadFileName(basePath, fileData, shortFilePaths);
+          assert.equal(
+            generatedFileName,
+            shortFilePaths ? expectedFileNameShort : expectedFileNameLong
+          );
+        };
 
-      const promises = testData.map((data) => runTest(data));
-      await Promise.all(promises);
+        const promises = testData.map((data) => runTest(data));
+        await Promise.all(promises);
+      });
     });
   });
 
-  describe('#init', () => {
-    let strapiOriginal;
+  [true, false].forEach((shortFilePaths) => {
+    describe(`#init (shortFilePaths = ${shortFilePaths})`, () => {
+      let strapiOriginal;
 
-    beforeEach(() => {
-      strapiOriginal = global.strapi;
+      beforeEach(() => {
+        strapiOriginal = global.strapi;
 
-      global.strapi = {
-        config: {
-          currentEnvironment: {},
-        },
-        log: {
-          info() {},
-          debug() {},
-        },
-      };
-    });
+        global.strapi = {
+          config: {
+            currentEnvironment: {},
+          },
+          log: {
+            info() {},
+            debug() {},
+          },
+        };
+      });
 
-    afterEach(() => {
-      if (strapiOriginal === undefined) {
-        delete global.strapi;
-      } else {
-        global.strapi = strapiOriginal;
-      }
-    });
+      afterEach(() => {
+        if (strapiOriginal === undefined) {
+          delete global.strapi;
+        } else {
+          global.strapi = strapiOriginal;
+        }
+      });
 
-    it('must return an object with upload and delete methods', () => {
-      const config = {
-        serviceAccount: {
-          project_id: '123',
-          client_email: 'my@email.org',
-          private_key: 'a random key',
-        },
-        bucketName: 'any',
-      };
+      it('must return an object with upload and delete methods', () => {
+        const config = {
+          serviceAccount: {
+            project_id: '123',
+            client_email: 'my@email.org',
+            private_key: 'a random key',
+          },
+          bucketName: 'any',
+          shortFilePaths: shortFilePaths,
+        };
 
-      const result = init(config);
+        const result = init(config);
 
-      assert.ok(Object.keys(result).includes('upload'));
-      assert.equal(typeof result.upload, 'function');
-      assert.ok(Object.keys(result).includes('delete'));
-      assert.equal(typeof result.delete, 'function');
-    });
+        assert.ok(Object.keys(result).includes('upload'));
+        assert.equal(typeof result.upload, 'function');
+        assert.ok(Object.keys(result).includes('delete'));
+        assert.equal(typeof result.delete, 'function');
+      });
 
-    it('must instanciate google cloud storage with right configurations', () => {
-      let assertionsCount = 0;
-      mockRequire('@google-cloud/storage', {
-        Storage: class {
-          constructor(...args) {
-            assertionsCount += 1;
-            assert.deepEqual(args, [
-              {
-                credentials: {
+      it('must instanciate google cloud storage with right configurations', () => {
+        let assertionsCount = 0;
+        mockRequire('@google-cloud/storage', {
+          Storage: class {
+            constructor(...args) {
+              assertionsCount += 1;
+              assert.deepEqual(args, [
+                {
+                  credentials: {
+                    client_email: 'my@email.org',
+                    private_key: 'a random key',
+                  },
+                  projectId: '123',
+                },
+              ]);
+            }
+          },
+        });
+        const provider = mockRequire.reRequire('../../lib/provider');
+        const config = {
+          serviceAccount: {
+            project_id: '123',
+            client_email: 'my@email.org',
+            private_key: 'a random key',
+          },
+          bucketName: 'any',
+          shortFilePaths: shortFilePaths,
+        };
+        provider.init(config);
+        assert.equal(assertionsCount, 1);
+        mockRequire.stop('@google-cloud/storage');
+      });
+
+      describe('when execute #upload', () => {
+        let assertionsCount;
+
+        beforeEach(() => {
+          assertionsCount = 0;
+        });
+
+        describe('when bucket exists', () => {
+          const createBucketMock = ({ fileMock, expectedFileNames }) => ({
+            file(fileName) {
+              assertionsCount += 1;
+              assert.equal(fileName, expectedFileNames.shift());
+              return fileMock;
+            },
+            async exists() {
+              assertionsCount += 1;
+              return [true];
+            },
+          });
+
+          describe('when file DOES NOT exists in bucket', () => {
+            const createFileMock = ({ saveExpectedArgs }) => ({
+              async exists() {
+                assertionsCount += 1;
+                return [false];
+              },
+              async save(...args) {
+                assertionsCount += 1;
+                assert.deepEqual(args, saveExpectedArgs);
+                return [true];
+              },
+            });
+
+            it('must save file', async () => {
+              const fileData = {
+                ext: '.JPEG',
+                buffer: 'file buffer information',
+                mime: 'image/jpeg',
+                name: 'people coding.JPEG',
+                related: [
+                  {
+                    ref: 'ref',
+                  },
+                ],
+                hash: '4l0ngH45h',
+                path: '/tmp/strapi',
+              };
+
+              const saveExpectedArgs = [
+                'file buffer information',
+                {
+                  contentType: 'image/jpeg',
+                  metadata: {
+                    contentDisposition: 'inline; filename="people coding.JPEG"',
+                  },
+                  public: true,
+                },
+              ];
+
+              const fileMock = createFileMock({ saveExpectedArgs });
+              const expectedFileNames = [
+                '/tmp/strapi/people-coding.JPEG_4l0ngH45h.jpeg',
+                '/tmp/strapi/people-coding.JPEG_4l0ngH45h.jpeg',
+              ];
+              const bucketMock = createBucketMock({ fileMock, expectedFileNames });
+              const Storage = class {
+                bucket(bucketName) {
+                  assertionsCount += 1;
+                  assert.equal(bucketName, 'any bucket');
+                  return bucketMock;
+                }
+              };
+
+              mockRequire('@google-cloud/storage', { Storage });
+              const provider = mockRequire.reRequire('../../lib/provider');
+              const config = {
+                serviceAccount: {
+                  project_id: '123',
                   client_email: 'my@email.org',
                   private_key: 'a random key',
                 },
-                projectId: '123',
-              },
-            ]);
-          }
-        },
-      });
-      const provider = mockRequire.reRequire('../../lib/provider');
-      const config = {
-        serviceAccount: {
-          project_id: '123',
-          client_email: 'my@email.org',
-          private_key: 'a random key',
-        },
-        bucketName: 'any',
-      };
-      provider.init(config);
-      assert.equal(assertionsCount, 1);
-      mockRequire.stop('@google-cloud/storage');
-    });
-
-    describe('when execute #upload', () => {
-      let assertionsCount;
-
-      beforeEach(() => {
-        assertionsCount = 0;
-      });
-
-      describe('when bucket exists', () => {
-        const createBucketMock = ({ fileMock, expectedFileNames }) => ({
-          file(fileName) {
-            assertionsCount += 1;
-            assert.equal(fileName, expectedFileNames.shift());
-            return fileMock;
-          },
-          async exists() {
-            assertionsCount += 1;
-            return [true];
-          },
-        });
-
-        describe('when file DOES NOT exists in bucket', () => {
-          const createFileMock = ({ saveExpectedArgs }) => ({
-            async exists() {
-              assertionsCount += 1;
-              return [false];
-            },
-            async save(...args) {
-              assertionsCount += 1;
-              assert.deepEqual(args, saveExpectedArgs);
-              return [true];
-            },
+                bucketName: 'any bucket',
+                shortFilePaths: shortFilePaths,
+              };
+              const providerInstance = provider.init(config);
+              await providerInstance.upload(fileData);
+              assert.equal(assertionsCount, 6);
+              mockRequire.stop('@google-cloud/storage');
+            });
           });
 
-          it('must save file', async () => {
-            const fileData = {
-              ext: '.JPEG',
-              buffer: 'file buffer information',
-              mime: 'image/jpeg',
-              name: 'people coding.JPEG',
-              related: [
-                {
-                  ref: 'ref',
-                },
-              ],
-              hash: '4l0ngH45h',
-              path: '/tmp/strapi',
-            };
-
-            const saveExpectedArgs = [
-              'file buffer information',
-              {
-                contentType: 'image/jpeg',
-                metadata: {
-                  contentDisposition: 'inline; filename="people coding.JPEG"',
-                },
-                public: true,
-              },
-            ];
-
-            const fileMock = createFileMock({ saveExpectedArgs });
-            const expectedFileNames = [
-              '/tmp/strapi/people-coding.JPEG_4l0ngH45h.jpeg',
-              '/tmp/strapi/people-coding.JPEG_4l0ngH45h.jpeg',
-            ];
-            const bucketMock = createBucketMock({ fileMock, expectedFileNames });
-            const Storage = class {
-              bucket(bucketName) {
+          describe('when file exists in bucket', () => {
+            const createFileMock = ({ saveExpectedArgs }) => ({
+              async exists() {
                 assertionsCount += 1;
-                assert.equal(bucketName, 'any bucket');
-                return bucketMock;
-              }
-            };
-
-            mockRequire('@google-cloud/storage', { Storage });
-            const provider = mockRequire.reRequire('../../lib/provider');
-            const config = {
-              serviceAccount: {
-                project_id: '123',
-                client_email: 'my@email.org',
-                private_key: 'a random key',
+                return [true];
               },
-              bucketName: 'any bucket',
-            };
-            const providerInstance = provider.init(config);
-            await providerInstance.upload(fileData);
-            assert.equal(assertionsCount, 6);
-            mockRequire.stop('@google-cloud/storage');
-          });
-        });
-
-        describe('when file exists in bucket', () => {
-          const createFileMock = ({ saveExpectedArgs }) => ({
-            async exists() {
-              assertionsCount += 1;
-              return [true];
-            },
-            async delete() {
-              assertionsCount += 1;
-              return true;
-            },
-            async save(...args) {
-              assertionsCount += 1;
-              assert.deepEqual(args, saveExpectedArgs);
-              return [true];
-            },
-          });
-
-          it('must delete file before write it', async () => {
-            const baseUrl = 'https://storage.googleapis.com';
-            const url = `${baseUrl}/random-bucket/4l0ngH45h/people-coding.JPEG_4l0ngH45h.jpeg`;
-
-            const fileData = {
-              ext: '.JPEG',
-              buffer: 'file buffer information',
-              mime: 'image/jpeg',
-              name: 'people coding.JPEG',
-              related: [],
-              hash: '4l0ngH45h',
-              url,
-            };
-
-            const saveExpectedArgs = [
-              'file buffer information',
-              {
-                contentType: 'image/jpeg',
-                metadata: {
-                  contentDisposition: 'inline; filename="people coding.JPEG"',
-                },
-                public: true,
-              },
-            ];
-
-            const fileMock = createFileMock({ saveExpectedArgs });
-            const expectedFileNames = [
-              '4l0ngH45h/people-coding.JPEG_4l0ngH45h.jpeg',
-              '4l0ngH45h/people-coding.JPEG_4l0ngH45h.jpeg',
-              '4l0ngH45h/people-coding.JPEG_4l0ngH45h.jpeg',
-            ];
-            const bucketMock = createBucketMock({ fileMock, expectedFileNames });
-            const Storage = class {
-              bucket(bucketName) {
+              async delete() {
                 assertionsCount += 1;
-                assert.equal(bucketName, 'random-bucket');
-                return bucketMock;
-              }
-            };
-
-            mockRequire('@google-cloud/storage', { Storage });
-            const provider = mockRequire.reRequire('../../lib/provider');
-            const config = {
-              serviceAccount: {
-                project_id: '123',
-                client_email: 'my@email.org',
-                private_key: 'a random key',
+                return true;
               },
-              bucketName: 'random-bucket',
-            };
-            const providerInstance = provider.init(config);
-            await providerInstance.upload(fileData);
-            assert.equal(assertionsCount, 9);
-            mockRequire.stop('@google-cloud/storage');
-          });
-        });
-      });
-    });
-
-    describe('when execute #delete', () => {
-      let assertionsCount;
-
-      describe('when bucket exists', () => {
-        const createBucketMock = ({ fileMock, expectedFileNames }) => ({
-          file(fileName) {
-            assertionsCount += 1;
-            assert.equal(fileName, expectedFileNames.shift());
-            return fileMock;
-          },
-          async exists() {
-            assertionsCount += 1;
-            return [true];
-          },
-        });
-
-        describe('when file is deleted with success', () => {
-          const createFileMock = () => ({
-            async delete() {
-              assertionsCount += 1;
-              return [];
-            },
-          });
-
-          it('must log message and resolve with nothing', async () => {
-            global.strapi.log.debug = (...args) => {
-              assert.deepEqual(args, ['File o/people-working.png successfully deleted']);
-              assertionsCount += 1;
-            };
-            assertionsCount = 0;
-            const expectedFileNames = ['o/people-working.png'];
-            const bucketMock = createBucketMock({ fileMock: createFileMock(), expectedFileNames });
-            mockRequire('@google-cloud/storage', {
-              Storage: class {
-                bucket(bucketName) {
-                  assertionsCount += 1;
-                  assert.equal(bucketName, 'my-bucket');
-                  return bucketMock;
-                }
+              async save(...args) {
+                assertionsCount += 1;
+                assert.deepEqual(args, saveExpectedArgs);
+                return [true];
               },
             });
-            const provider = mockRequire.reRequire('../../lib/provider');
-            const config = {
-              serviceAccount: {
-                project_id: '123',
-                client_email: 'my@email.org',
-                private_key: 'a random key',
-              },
-              bucketName: 'my-bucket',
-            };
-            const providerInstance = provider.init(config);
-            const fileData = {
-              url: 'https://storage.googleapis.com/my-bucket/o/people-working.png',
-            };
-            await assert.doesNotReject(providerInstance.delete(fileData));
-            // TODO: fix this. Probabily a problem with async flows
-            await new Promise((resolve) => setTimeout(resolve, 1));
-            assert.equal(assertionsCount, 4);
-            mockRequire.stop('@google-cloud/storage');
+
+            it('must delete file before write it', async () => {
+              const baseUrl = 'https://storage.googleapis.com';
+              const url = `${baseUrl}/random-bucket/4l0ngH45h/people-coding.JPEG_4l0ngH45h.jpeg`;
+
+              const fileData = {
+                ext: '.JPEG',
+                buffer: 'file buffer information',
+                mime: 'image/jpeg',
+                name: 'people coding.JPEG',
+                related: [],
+                hash: '4l0ngH45h',
+                url,
+              };
+
+              const saveExpectedArgs = [
+                'file buffer information',
+                {
+                  contentType: 'image/jpeg',
+                  metadata: {
+                    contentDisposition: 'inline; filename="people coding.JPEG"',
+                  },
+                  public: true,
+                },
+              ];
+
+              const fileMock = createFileMock({ saveExpectedArgs });
+              const expectedFileNames = [
+                '4l0ngH45h/people-coding.JPEG_4l0ngH45h.jpeg',
+                '4l0ngH45h/people-coding.JPEG_4l0ngH45h.jpeg',
+                '4l0ngH45h/people-coding.JPEG_4l0ngH45h.jpeg',
+              ];
+              const bucketMock = createBucketMock({ fileMock, expectedFileNames });
+              const Storage = class {
+                bucket(bucketName) {
+                  assertionsCount += 1;
+                  assert.equal(bucketName, 'random-bucket');
+                  return bucketMock;
+                }
+              };
+
+              mockRequire('@google-cloud/storage', { Storage });
+              const provider = mockRequire.reRequire('../../lib/provider');
+              const config = {
+                serviceAccount: {
+                  project_id: '123',
+                  client_email: 'my@email.org',
+                  private_key: 'a random key',
+                },
+                bucketName: 'random-bucket',
+                shortFilePaths: shortFilePaths,
+              };
+              const providerInstance = provider.init(config);
+              await providerInstance.upload(fileData);
+              assert.equal(assertionsCount, 9);
+              mockRequire.stop('@google-cloud/storage');
+            });
           });
         });
+      });
 
-        describe('when file cannot be deleted', () => {
-          const createFileMock = ({ errorCode }) => ({
-            async delete() {
+      describe('when execute #delete', () => {
+        let assertionsCount;
+
+        describe('when bucket exists', () => {
+          const createBucketMock = ({ fileMock, expectedFileNames }) => ({
+            file(fileName) {
               assertionsCount += 1;
-              const error = new Error('Error deleting file');
-              error.code = errorCode;
-              throw error;
+              assert.equal(fileName, expectedFileNames.shift());
+              return fileMock;
+            },
+            async exists() {
+              assertionsCount += 1;
+              return [true];
             },
           });
 
-          describe('when error is a 404 error', () => {
-            it('must log message and resolve with nothing', async () => {
-              global.strapi.log.warn = (...args) => {
+          describe('when file is deleted with success', () => {
+            const createFileMock = () => ({
+              async delete() {
                 assertionsCount += 1;
-                assert.deepEqual(args, [
-                  'Remote file was not found, you may have to delete manually.',
-                ]);
+                return [];
+              },
+            });
+
+            it('must log message and resolve with nothing', async () => {
+              global.strapi.log.debug = (...args) => {
+                assert.deepEqual(args, ['File o/people-working.png successfully deleted']);
+                assertionsCount += 1;
               };
-              const errorCode = 404;
               assertionsCount = 0;
               const expectedFileNames = ['o/people-working.png'];
               const bucketMock = createBucketMock({
-                fileMock: createFileMock({ errorCode }),
+                fileMock: createFileMock(),
                 expectedFileNames,
               });
               mockRequire('@google-cloud/storage', {
@@ -694,6 +661,7 @@ describe('/lib/provider.js', () => {
                   private_key: 'a random key',
                 },
                 bucketName: 'my-bucket',
+                shortFilePaths: shortFilePaths,
               };
               const providerInstance = provider.init(config);
               const fileData = {
@@ -707,49 +675,107 @@ describe('/lib/provider.js', () => {
             });
           });
 
-          describe('when error is any other error', () => {
-            it('must reject with problem', async () => {
-              global.strapi.log.warn = (...args) => {
+          describe('when file cannot be deleted', () => {
+            const createFileMock = ({ errorCode }) => ({
+              async delete() {
                 assertionsCount += 1;
-                assert.deepEqual(args, [
-                  'Remote file was not found, you may have to delete manually.',
-                ]);
-              };
-              const errorCode = 500;
-              assertionsCount = 0;
-              const expectedFileNames = ['o/people-working.png'];
-              const bucketMock = createBucketMock({
-                fileMock: createFileMock({ errorCode }),
-                expectedFileNames,
+                const error = new Error('Error deleting file');
+                error.code = errorCode;
+                throw error;
+              },
+            });
+
+            describe('when error is a 404 error', () => {
+              it('must log message and resolve with nothing', async () => {
+                global.strapi.log.warn = (...args) => {
+                  assertionsCount += 1;
+                  assert.deepEqual(args, [
+                    'Remote file was not found, you may have to delete manually.',
+                  ]);
+                };
+                const errorCode = 404;
+                assertionsCount = 0;
+                const expectedFileNames = ['o/people-working.png'];
+                const bucketMock = createBucketMock({
+                  fileMock: createFileMock({ errorCode }),
+                  expectedFileNames,
+                });
+                mockRequire('@google-cloud/storage', {
+                  Storage: class {
+                    bucket(bucketName) {
+                      assertionsCount += 1;
+                      assert.equal(bucketName, 'my-bucket');
+                      return bucketMock;
+                    }
+                  },
+                });
+                const provider = mockRequire.reRequire('../../lib/provider');
+                const config = {
+                  serviceAccount: {
+                    project_id: '123',
+                    client_email: 'my@email.org',
+                    private_key: 'a random key',
+                  },
+                  bucketName: 'my-bucket',
+                  shortFilePaths: shortFilePaths,
+                };
+                const providerInstance = provider.init(config);
+                const fileData = {
+                  url: 'https://storage.googleapis.com/my-bucket/o/people-working.png',
+                };
+                await assert.doesNotReject(providerInstance.delete(fileData));
+                // TODO: fix this. Probabily a problem with async flows
+                await new Promise((resolve) => setTimeout(resolve, 1));
+                assert.equal(assertionsCount, 4);
+                mockRequire.stop('@google-cloud/storage');
               });
-              mockRequire('@google-cloud/storage', {
-                Storage: class {
-                  bucket(bucketName) {
-                    assertionsCount += 1;
-                    assert.equal(bucketName, 'my-bucket');
-                    return bucketMock;
-                  }
-                },
+            });
+
+            describe('when error is any other error', () => {
+              it('must reject with problem', async () => {
+                global.strapi.log.warn = (...args) => {
+                  assertionsCount += 1;
+                  assert.deepEqual(args, [
+                    'Remote file was not found, you may have to delete manually.',
+                  ]);
+                };
+                const errorCode = 500;
+                assertionsCount = 0;
+                const expectedFileNames = ['o/people-working.png'];
+                const bucketMock = createBucketMock({
+                  fileMock: createFileMock({ errorCode }),
+                  expectedFileNames,
+                });
+                mockRequire('@google-cloud/storage', {
+                  Storage: class {
+                    bucket(bucketName) {
+                      assertionsCount += 1;
+                      assert.equal(bucketName, 'my-bucket');
+                      return bucketMock;
+                    }
+                  },
+                });
+                const provider = mockRequire.reRequire('../../lib/provider');
+                const config = {
+                  serviceAccount: {
+                    project_id: '123',
+                    client_email: 'my@email.org',
+                    private_key: 'a random key',
+                  },
+                  bucketName: 'my-bucket',
+                  shortFilePaths: shortFilePaths,
+                };
+                const providerInstance = provider.init(config);
+                const fileData = {
+                  url: 'https://storage.googleapis.com/my-bucket/o/people-working.png',
+                };
+                // FIXME: based on code this must reject. Probabily a problem with async flows
+                await assert.doesNotReject(providerInstance.delete(fileData));
+                // TODO: fix this. Probabily a problem with async flows
+                await new Promise((resolve) => setTimeout(resolve, 1));
+                assert.equal(assertionsCount, 3);
+                mockRequire.stop('@google-cloud/storage');
               });
-              const provider = mockRequire.reRequire('../../lib/provider');
-              const config = {
-                serviceAccount: {
-                  project_id: '123',
-                  client_email: 'my@email.org',
-                  private_key: 'a random key',
-                },
-                bucketName: 'my-bucket',
-              };
-              const providerInstance = provider.init(config);
-              const fileData = {
-                url: 'https://storage.googleapis.com/my-bucket/o/people-working.png',
-              };
-              // FIXME: based on code this must reject. Probabily a problem with async flows
-              await assert.doesNotReject(providerInstance.delete(fileData));
-              // TODO: fix this. Probabily a problem with async flows
-              await new Promise((resolve) => setTimeout(resolve, 1));
-              assert.equal(assertionsCount, 3);
-              mockRequire.stop('@google-cloud/storage');
             });
           });
         });
