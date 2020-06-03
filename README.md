@@ -182,6 +182,21 @@ Define base path to save each media document.
 
 Boolean atribute to define public attribute to file when it is upload to storage.
 
+#### `shortFilePaths`:
+
+A boolean attribute (default is `false` - the default version).
+
+When set to `false` each uploaded file will be stored in its own directory. Hence with 
+auto-resizing of images enabled -> One image upload will result in up to 5 images each 
+in its own directory.
+
+When set to `true` all resized version of one image will be in the same directory. There
+will still be one distinct directory for each image regardless of whether auto-resizing
+is turned on or off.
+
+*This latter setting is new and works for the Strapi standard settings. However, it
+might not work yet when interfering with the upload process manually.*
+
 ## Important information
 
 From release `3.0.0-beta.20` the `bucketLocation` is no longer supported.
