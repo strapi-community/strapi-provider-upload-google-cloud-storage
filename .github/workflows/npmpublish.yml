@@ -7,7 +7,6 @@ on:
 jobs:
   npm-publish:
     runs-on: ubuntu-latest
-    branches: master
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
