@@ -11,7 +11,7 @@ const {
 describe('/lib/provider.js', () => {
   describe('#checkServiceAccount', () => {
     describe('when config is invalid', () => {
-      
+
       it('must throw error "Bucket name" is required!', () => {
         const error = new Error('"Bucket name" is required!');
         assert.throws(() => checkServiceAccount(), error);
@@ -96,7 +96,7 @@ describe('/lib/provider.js', () => {
         };
         checkServiceAccount(config);
       });
-      
+
       it('must accept configurations without errors', () => {
         const config = {
           serviceAccount: {
