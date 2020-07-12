@@ -11,34 +11,13 @@ const {
 describe('/lib/provider.js', () => {
   describe('#checkServiceAccount', () => {
     describe('when config is invalid', () => {
-      it('must throw error for undefined', () => {
-        const error = new TypeError("Cannot read property 'serviceAccount' of undefined");
+      
+      it('must throw error "Bucket name" is required!', () => {
+        const error = new Error('"Bucket name" is required!');
         assert.throws(() => checkServiceAccount(), error);
       });
 
-      it('must throw error "Service Account JSON" is required!', () => {
-        const config = {};
-        const error = new Error('"Service Account JSON" is required!');
-        assert.throws(() => checkServiceAccount(config), error);
-      });
-
-      it('must throw error "Service Account JSON" is required! for empty value', () => {
-        const config = {
-          serviceAccount: '',
-        };
-        const error = new Error('"Service Account JSON" is required!');
-        assert.throws(() => checkServiceAccount(config), error);
-      });
-
-      it('must throw error "Bucket name" is required!', () => {
-        const config = {
-          serviceAccount: {},
-        };
-        const error = new Error('"Bucket name" is required!');
-        assert.throws(() => checkServiceAccount(config), error);
-      });
-
-      it('must throw error when serviceAccount does not accoplish with correct values', () => {
+      it('must throw error when serviceAccount does not accomplish with correct values', () => {
         const config = {
           serviceAccount: "I'm not a valid JSON",
           bucketName: 'some-bucket',
@@ -49,7 +28,7 @@ describe('/lib/provider.js', () => {
         assert.throws(() => checkServiceAccount(config), error);
       });
 
-      it('must throw error when serviceAccount does not accoplish with correct values', () => {
+      it('must throw error when serviceAccount does not accomplish with correct values', () => {
         const config = {
           serviceAccount: {},
           bucketName: 'some-bucket',
@@ -60,7 +39,7 @@ describe('/lib/provider.js', () => {
         assert.throws(() => checkServiceAccount(config), error);
       });
 
-      it('must throw error when serviceAccount does not accoplish with correct values', () => {
+      it('must throw error when serviceAccount does not accomplish with correct values', () => {
         const config = {
           serviceAccount: {},
           bucketName: 'some-bucket',
@@ -71,7 +50,7 @@ describe('/lib/provider.js', () => {
         assert.throws(() => checkServiceAccount(config), error);
       });
 
-      it('must throw error when serviceAccount does not accoplish with correct values', () => {
+      it('must throw error when serviceAccount does not accomplish with correct values', () => {
         const config = {
           serviceAccount: {
             project_id: '123',
@@ -84,7 +63,7 @@ describe('/lib/provider.js', () => {
         assert.throws(() => checkServiceAccount(config), error);
       });
 
-      it('must throw error when serviceAccount does not accoplish with correct values', () => {
+      it('must throw error when serviceAccount does not accomplish with correct values', () => {
         const config = {
           serviceAccount: {
             project_id: '123',
@@ -98,7 +77,7 @@ describe('/lib/provider.js', () => {
         assert.throws(() => checkServiceAccount(config), error);
       });
 
-      it('must throw error when serviceAccount does not accoplish with correct values', () => {
+      it('must throw error when serviceAccount does not accomplish with correct values', () => {
         const config = {
           serviceAccount: `{"project_id": "123", "client_email": "my@email.org"}`,
           bucketName: 'some-bucket',
@@ -111,6 +90,13 @@ describe('/lib/provider.js', () => {
     });
 
     describe('when config is valid', () => {
+      it('must accept minimal configuration without errors', () => {
+        const config = {
+          bucketName: 'some-bucket',
+        };
+        checkServiceAccount(config);
+      });
+      
       it('must accept configurations without errors', () => {
         const config = {
           serviceAccount: {

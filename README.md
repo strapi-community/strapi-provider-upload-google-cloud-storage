@@ -30,7 +30,11 @@ The bucket should be created with **fine grained** access control, as the plugin
 ### Where my bucket can be located ?
 - https://cloud.google.com/storage/docs/locations
 
-## Setting up Google authentication
+## <a name="setup-auth"></a> Setting up Google authentication
+
+If you are deploying to a Google Cloud Platform product that supports [Application Default Credentials](https://cloud.google.com/docs/authentication/production#finding_credentials_automatically) (such as App Engine, Cloud Run, and Cloud Functions etc.), then you can skip this step. 
+
+If you are deploying outside GCP, then follow these steps to set up authentication:
 
 1. In the GCP Console, go to the **Create service account key** page.. 
     - **[Go to the create service account key page](https://console.cloud.google.com/apis/credentials/serviceaccountkey)**
@@ -39,17 +43,33 @@ The bucket should be created with **fine grained** access control, as the plugin
 4. From the **Role** list, select **Cloud Storage > Storage Admin**.
 5. Select `JSON` for **Key Type**
 6. Click **Create**. A JSON file that contains your key downloads to your computer.
+7. Copy the full content of the downloaded JSON file
+8. Open the Strapi configuration file 
+9. Paste it into the "Service Account JSON" field (as `string` or `JSON`, be careful with indentation)
 
 ## Setting up the a configuration file
 
 You will find below many examples of configurations, for each example :
-1. Copy the full content of the downloaded JSON file
-2. Open the configuration file 
-3. Paste it into the "Service Account JSON" field (as `string` or `JSON`, be careful with indentation)
-4. Set the `bucketName` field and replace `Bucket-name` by yours [previously create](#create-bucket)
-5. Default `baseUrl` is working, but you can replace it by yours (if you use a custom baseUrl)
-6. Save the configuration file
-7. Enjoy !
+
+1. If you are deploying outside GCP, then follow the steps above [Setting up Google authentication](#setup-auth)
+2. Set the `bucketName` field and replace `Bucket-name` by yours [previously create](#create-bucket)
+3. Default `baseUrl` is working, but you can replace it by yours (if you use a custom baseUrl)
+4. Save the configuration file
+5. Enjoy !
+
+**Example with application default credentials (minimal setup)**
+
+This works only for deployment to GCP products such as App Engine, Cloud Run, and Cloud Functions etc.
+
+`./extensions/upload/config/settings.json`
+```json
+{
+  "provider": "google-cloud-storage",
+  "providerOptions": {
+    "bucketName": "Bucket-name"
+  }
+}
+```
 
 **Example with one configuration for all environments (dev/stage/prod)**
 
@@ -158,9 +178,9 @@ Contents of `gcs` key in Strapi custom config, if set, will be merged over `./ex
 
 #### `serviceAccount` :
 
-JSON data provide by Google Account (explained before).
+JSON data provide by Google Account (explained before). If you are deploying to a GCP product that supports Application Default credentials, you can leave this omitted, and authentication will work automatically.
 
-Can be set as a String or JSON Object.
+Can be set as a String, JSON Object, or omitted.
 
 #### `bucketName` :
 
