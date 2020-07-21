@@ -102,6 +102,43 @@ This works only for deployment to GCP products such as App Engine, Cloud Run, an
   }
 }
 ```
+**Example with environment variable Strapi V3.0.1**
+
+Strapi will pass the environment variable as path not a string what will raise this error ( specially when working with Dockerfile) 
+
+```Error parsing data "Service Account JSON", please be sure to copy/paste the full JSON file. at checkServiceAccount (/app/node_modules/strapi-provider-upload-google-cloud-storage/lib/provider.js```
+
+so you need to add a handler with try..catch
+
+`./config/plugin.js`
+
+```json
+const { readFileSync } = require('fs');
+
+const getFile = path => {
+  try {
+    return readFileSync(path).toString();
+  } catch (error) {
+    return "";
+  }
+};
+
+module.exports = ({ env }) => {
+  
+  return ({
+    upload: {
+      provider: env('PROVIDER'),
+      providerOptions: {
+        serviceAccount: getFile(env('GCS_SERVICE_ACCOUNT')),
+        bucketName: env('BUCKET_NAME'),
+        sizeLimit: env('SIZE_LIMIT'),
+        basePath: 'images',
+        baseUrl: env('BASE_URL'),
+      },
+    }
+  })
+};
+```
 
 You can rename the `environment variables` as you like.
 All variable are optional, you can setting up only `bucketName` if you need to change only the `bucketName`.
