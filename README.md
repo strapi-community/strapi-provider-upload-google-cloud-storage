@@ -36,7 +36,7 @@ If you are deploying to a Google Cloud Platform product that supports [Applicati
 
 If you are deploying outside GCP, then follow these steps to set up authentication:
 
-1. In the GCP Console, go to the **Create service account key** page.. 
+1. In the GCP Console, go to the **Create service account key** page.
     - **[Go to the create service account key page](https://console.cloud.google.com/apis/credentials/serviceaccountkey)**
 2. From the **Service account** list, select **New service account**.
 3. In the **Service account name** field, enter a name.
@@ -47,12 +47,12 @@ If you are deploying outside GCP, then follow these steps to set up authenticati
 8. Open the Strapi configuration file 
 9. Paste it into the "Service Account JSON" field (as `string` or `JSON`, be careful with indentation)
 
-## Setting up the a configuration file
+## Setting up the configuration file
 
 You will find below many examples of configurations, for each example :
 
 1. If you are deploying outside GCP, then follow the steps above [Setting up Google authentication](#setup-auth)
-2. Set the `bucketName` field and replace `Bucket-name` by yours [previously create](#create-bucket)
+2. Set the `#bucketName#` field and replace `Bucket-name` by yours [previously create](#create-bucket)
 3. Default `baseUrl` is working, but you can replace it by yours (if you use a custom baseUrl)
 4. Save the configuration file
 5. Enjoy !
@@ -61,118 +61,70 @@ You will find below many examples of configurations, for each example :
 
 This works only for deployment to GCP products such as App Engine, Cloud Run, and Cloud Functions etc.
 
-`./extensions/upload/config/settings.json`
-```json
-{
-  "provider": "google-cloud-storage",
-  "providerOptions": {
-    "bucketName": "Bucket-name"
-  }
+Edit `./config/plugins.js`
+
+```javascript
+module.exports = {
+    upload: {
+        provider: 'google-cloud-storage',
+        providerOptions: {
+            bucketName: '#bucketName#',
+            publicFiles: false,
+            uniform: false,
+            basePath: '',
+        },
+    },
+    //...
 }
 ```
 
-**Example with one configuration for all environments (dev/stage/prod)**
+**Example with credentials for outside GCP account**
 
-`./extensions/upload/config/settings.json`
-```json
-{
-  "provider": "google-cloud-storage",
-  "providerOptions": {
-    "serviceAccount": "<Your serviceAccount JSON object/string here>",
-    "bucketName": "Bucket-name",
-    "baseUrl": "https://storage.googleapis.com/{bucket-name}",
-    "basePath": "/",
-    "publicFiles": true
-  }
+Edit `./config/plugins.js`
+
+```javascript
+module.exports = {
+    upload: {
+        provider: 'google-cloud-storage',
+        providerOptions: {
+            bucketName: '#bucketName#',
+            publicFiles: true,
+            uniform: false,
+            serviceAccount: {}, // replace `{}` with your serviceAccount JSON object
+            baseUrl: 'https://storage.googleapis.com/{bucket-name}',
+            basePath: '',
+        },
+      },
+    //...
 }
 ```
+
+If you have different upload provider by environment, you can override `plugins.js` file by environment : 
+- `config/env/development/plugins.js`
+- `config/env/production/plugins.js`
+
+This file, under `config/env/{env}/` will be overriding default configuration present in main folder `config`.
 
 **Example with environment variable**
 
-`./extensions/upload/config/settings.json`
-```json
-{
-  "provider": "google-cloud-storage",
-  "providerOptions": {
-    "serviceAccount": "${process.env.GCS_SERVICE_ACCOUNT || <Your serviceAccount JSON object/string here>}",
-    "bucketName": "${process.env.GCS_BUCKET_NAME || Bucket-name}",
-    "baseUrl": "${process.env.GCS_BASE_URL || https://storage.googleapis.com/{bucket-name}}",
-    "basePath": "",
-    "publicFiles": true
-  }
-}
+```javascript
+module.exports = ({ env }) => ({
+    upload: {
+      provider: 'google-cloud-storage',
+      providerOptions: {
+        serviceAccount: env('GCS_SERVICE_ACCOUNT'),
+        bucketName: env('GCS_BUCKET_NAME'),
+        basePath: env('GCS_BASE_PATH'),
+        baseUrl: env('GCS_BASE_URL'),
+        publicFiles: env('GCS_PUBLIC_FILES'),
+        uniform: env('GCS_UNIFORM'),
+      },
+    },
+    //...
+});
 ```
 
-You can rename the `environment variables` as you like.
-All variable are optional, you can setting up only `bucketName` if you need to change only the `bucketName`.
-
-**Example with multi configuration multi upload : one by environment (dev/stage/prod)**
-
-`./extensions/upload/config/settings.js`
-```js
-const stagingProviderOptions = {
-  serviceAccount: '<Your serviceAccount JSON object/string here>', // json configuration 
-  bucketName: 'Bucket-name', // name of the bucket
-  baseUrl: 'https://storage.googleapis.com/{bucket-name}',
-  basePath: '/staging',
-  publicFiles: false
-};
-
-const productionProviderOptions = {
-  serviceAccount: '<Your serviceAccount JSON object/string here>', // json configuration 
-  bucketName: 'Bucket-name', // name of the bucket
-  baseUrl: 'https://storage.googleapis.com/{bucket-name}',
-  basePath: '/production',
-  publicFiles: true
-};
-
-
-if (process.env.NODE_ENV === 'production') {
-  module.exports = {
-    provider: 'google-cloud-storage',
-    providerOptions: productionProviderOptions
-  };
-}
-else if (process.env.NODE_ENV === 'staging') {
-  module.exports = {
-    provider: 'google-cloud-storage',
-    providerOptions: stagingProviderOptions
-  };
-}
-else {
-  module.exports = {
-    provider: 'local'
-  };
-}
-```
-
-**Overriding `uploadProvider` config with `gcs` key in Strapi custom config**
-
-Contents of `gcs` key in Strapi custom config, if set, will be merged over `./extensions/upload/config/settings.json`,
-
-`./config/custom.json` (config items set here will be merged over, overriding config set at `./extensions/upload/config/settings.json`)
-```json
-{
-  "gcs" : {
-    "serviceAccount": "<Your serviceAccount JSON object/string here>",
-    "bucketName": "Bucket-name",
-    "baseUrl": "https://storage.googleapis.com/{bucket-name}",
-    "publicFiles": true
-  }
-}
-```
-
-`./config/environments/<development|staging|production>/custom.json` (config items set here will be merged over and override the previous ones)
-```json
-{
-  "gcs" : {
-    "serviceAccount": "<Your serviceAccount JSON object/string here>",
-    "bucketName": "Bucket-name",
-    "baseUrl": "https://storage.googleapis.com/{bucket-name}",
-    "publicFiles": true
-  }
-}
-```
+Environment variable can be changed has your way.
 
 ## How to configure variable ?
 
@@ -185,6 +137,8 @@ Can be set as a String, JSON Object, or omitted.
 #### `bucketName` :
 
 The name of the bucket on Google Cloud Storage.
+- Required
+
 You can find more information on Google Cloud documentation.
 
 #### `baseUrl` :
@@ -197,19 +151,44 @@ Define your base Url, first is default value :
 #### `basePath` :
 
 Define base path to save each media document.
+- Optional
 
 #### `publicFiles`:
 
-Boolean atribute to define public attribute to file when it is upload to storage.
+Boolean to define a public attribute to file when it upload to storage.
+- Default value : `true`
+- Optional
 
-## Important information
+#### `uniform`:
 
-From release `3.0.0-beta.20` the `bucketLocation` is no longer supported.
-The plugin will not create the bucket, you need to configure it before.
+Boolean to define uniform access, when uniform bucket-level access is enabled
+- Default value : `false`
+- Optional
+
+## FAQ
+
+### Common errors
+
+#### Uniform access 
+
+`Error uploading file to Google Cloud Storage: Cannot insert legacy ACL for an object when uniform bucket-level access is enabled`
+
+When this error occurs, you need to set `uniform` variable to `true`.
+
+#### Service Account JSON
+
+`Error: Error parsing data "Service Account JSON", please be sure to copy/paste the full JSON file`
+
+When this error occurs, it's probably because you have miss something with the service account json configuration.
+
+Follow this step :
+- Open your `ServiceAccount` json file
+- Copy the full content of the file
+- Paste it under the variable `ServiceAccount` in `plugins.js` config file in JSON
 
 ## Resources
 
-* [MIT License](LICENSE.md)
+* [MIT License](LICENSE)
 
 ## Links
 
