@@ -165,6 +165,12 @@ Boolean to define uniform access, when uniform bucket-level access is enabled
 - Default value : `false`
 - Optional
 
+#### `oldFilePaths`:
+
+Boolean to use the old file path method. Probably only needed on existing projects.
+- Default value : `false`
+- Optional
+
 ## FAQ
 
 ### Common errors
