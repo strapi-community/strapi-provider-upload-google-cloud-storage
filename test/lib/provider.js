@@ -264,7 +264,7 @@ describe('/lib/provider.js', () => {
       const testData = [
         [
           '',
-          'christopher-campbell_df9a53d774/christopher-campbell_christopher-campbell_df9a53d774.jpeg',
+          'christopher-campbell_df9a53d774/christopher-campbell_df9a53d774.jpeg',
           {
             name: 'christopher-campbell',
             alternativeText: undefined,
@@ -280,7 +280,7 @@ describe('/lib/provider.js', () => {
         ],
         [
           '',
-          'thumbnail_christopher-campbell_df9a53d774/undefined_thumbnail_christopher-campbell_df9a53d774.jpeg',
+          'thumbnail_christopher-campbell_df9a53d774/thumbnail_christopher-campbell_df9a53d774.jpeg',
           {
             hash: 'thumbnail_christopher-campbell_df9a53d774',
             ext: '.jpeg',
@@ -294,7 +294,7 @@ describe('/lib/provider.js', () => {
         ],
         [
           'base-path/',
-          'base-path/galleries/boris-smokrovic_boris-smokrovic_9fd5439b3e.jpeg',
+          'base-path/galleries/boris-smokrovic_9fd5439b3e.jpeg',
           {
             name: 'boris-smokrovic',
             alternativeText: undefined,
@@ -311,7 +311,7 @@ describe('/lib/provider.js', () => {
         ],
         [
           'root/child/',
-          'root/child/thumbnail_boris-smokrovic_9fd5439b3e/undefined_thumbnail_boris-smokrovic_9fd5439b3e.jpeg',
+          'root/child/thumbnail_boris-smokrovic_9fd5439b3e/thumbnail_boris-smokrovic_9fd5439b3e.jpeg',
           {
             hash: 'thumbnail_boris-smokrovic_9fd5439b3e',
             ext: '.jpeg',
