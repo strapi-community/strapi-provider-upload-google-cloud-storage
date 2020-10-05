@@ -471,8 +471,8 @@ describe('/lib/provider.js', () => {
 
             const fileMock = createFileMock({ saveExpectedArgs });
             const expectedFileNames = [
-              '/tmp/strapi/people-coding.JPEG_4l0ngH45h.jpeg',
-              '/tmp/strapi/people-coding.JPEG_4l0ngH45h.jpeg',
+              '/tmp/strapi/4l0ngH45h.jpeg',
+              '/tmp/strapi/4l0ngH45h.jpeg',
             ];
             const bucketMock = createBucketMock({ fileMock, expectedFileNames });
             const Storage = class {
@@ -519,7 +519,7 @@ describe('/lib/provider.js', () => {
 
           it('must delete file before write it', async () => {
             const baseUrl = 'https://storage.googleapis.com';
-            const url = `${baseUrl}/random-bucket/4l0ngH45h/people-coding.JPEG_4l0ngH45h.jpeg`;
+            const url = `${baseUrl}/random-bucket/4l0ngH45h/4l0ngH45h.jpeg`;
 
             const fileData = {
               ext: '.JPEG',
@@ -544,9 +544,9 @@ describe('/lib/provider.js', () => {
 
             const fileMock = createFileMock({ saveExpectedArgs });
             const expectedFileNames = [
-              '4l0ngH45h/people-coding.JPEG_4l0ngH45h.jpeg',
-              '4l0ngH45h/people-coding.JPEG_4l0ngH45h.jpeg',
-              '4l0ngH45h/people-coding.JPEG_4l0ngH45h.jpeg',
+              '4l0ngH45h/4l0ngH45h.jpeg',
+              '4l0ngH45h/4l0ngH45h.jpeg',
+              '4l0ngH45h/4l0ngH45h.jpeg',
             ];
             const bucketMock = createBucketMock({ fileMock, expectedFileNames });
             const Storage = class {
@@ -633,7 +633,7 @@ describe('/lib/provider.js', () => {
             await assert.doesNotReject(providerInstance.delete(fileData));
             // TODO: fix this. Probabily a problem with async flows
             await new Promise((resolve) => setTimeout(resolve, 1));
-            assert.equal(assertionsCount, 4);
+            assert.equal(assertionsCount, 3);
             mockRequire.stop('@google-cloud/storage');
           });
         });
@@ -688,7 +688,7 @@ describe('/lib/provider.js', () => {
               await assert.doesNotReject(providerInstance.delete(fileData));
               // TODO: fix this. Probabily a problem with async flows
               await new Promise((resolve) => setTimeout(resolve, 1));
-              assert.equal(assertionsCount, 4);
+              assert.equal(assertionsCount, 3);
               mockRequire.stop('@google-cloud/storage');
             });
           });
