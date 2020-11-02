@@ -179,7 +179,7 @@ When this error occurs, you need to set `uniform` variable to `true`.
 
 `Error: Error parsing data "Service Account JSON", please be sure to copy/paste the full JSON file`
 
-When this error occurs, it's probably because you have miss something with the service account json configuration.
+When this error occurs, it's probably because you have missed something with the service account json configuration.
 
 Follow this step :
 - Open your `ServiceAccount` json file
