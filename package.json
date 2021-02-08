@@ -1,6 +1,6 @@
 {
   "name": "strapi-provider-upload-google-cloud-storage",
-  "version": "3.1.6",
+  "version": "3.4.6",
   "description": "(Non-official) Google Cloud Storage Provider for Strapi Upload",
   "directories": {
     "lib": "./lib"
@@ -46,8 +46,8 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "@google-cloud/storage": "^5.3.0",
-    "slugify": "^1.4.5"
+    "@google-cloud/storage": "^5.7.4",
+    "slugify": "^1.4.6"
   },
   "devDependencies": {
     "codecov": "^3.8.0",
