@@ -165,6 +165,12 @@ Boolean to define uniform access, when uniform bucket-level access is enabled
 - Default value : `false`
 - Optional
 
+#### `cacheMaxAge`:
+
+Number to set the cache-control header for uploaded files
+- Default value : `3600`
+- Optional
+
 ## FAQ
 
 ### Common errors
