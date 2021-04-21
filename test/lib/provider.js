@@ -11,7 +11,6 @@ const {
 describe('/lib/provider.js', () => {
   describe('#checkServiceAccount', () => {
     describe('when config is invalid', () => {
-
       it('must throw error "Bucket name" is required!', () => {
         const error = new Error('"Bucket name" is required!');
         assert.throws(() => checkServiceAccount(), error);
@@ -443,21 +442,21 @@ describe('/lib/provider.js', () => {
             },
           });
 
-          it('must save file', async () => {
-            const fileData = {
-              ext: '.JPEG',
-              buffer: 'file buffer information',
-              mime: 'image/jpeg',
-              name: 'people coding.JPEG',
-              related: [
-                {
-                  ref: 'ref',
-                },
-              ],
-              hash: '4l0ngH45h',
-              path: '/tmp/strapi',
-            };
+          const fileData = {
+            ext: '.JPEG',
+            buffer: 'file buffer information',
+            mime: 'image/jpeg',
+            name: 'people coding.JPEG',
+            related: [
+              {
+                ref: 'ref',
+              },
+            ],
+            hash: '4l0ngH45h',
+            path: '/tmp/strapi',
+          };
 
+          it('must save file', async () => {
             const saveExpectedArgs = [
               'file buffer information',
               {
@@ -470,10 +469,7 @@ describe('/lib/provider.js', () => {
             ];
 
             const fileMock = createFileMock({ saveExpectedArgs });
-            const expectedFileNames = [
-              '/tmp/strapi/4l0ngH45h.jpeg',
-              '/tmp/strapi/4l0ngH45h.jpeg',
-            ];
+            const expectedFileNames = ['/tmp/strapi/4l0ngH45h.jpeg', '/tmp/strapi/4l0ngH45h.jpeg'];
             const bucketMock = createBucketMock({ fileMock, expectedFileNames });
             const Storage = class {
               bucket(bucketName) {
@@ -492,6 +488,52 @@ describe('/lib/provider.js', () => {
                 private_key: 'a random key',
               },
               bucketName: 'any bucket',
+            };
+            const providerInstance = provider.init(config);
+            await providerInstance.upload(fileData);
+            assert.equal(assertionsCount, 6);
+            mockRequire.stop('@google-cloud/storage');
+          });
+
+          it('must save file with custom metadata', async () => {
+            const saveExpectedArgs = [
+              'file buffer information',
+              {
+                contentType: 'image/jpeg',
+                metadata: {
+                  cacheControl: 'public, max-age=604800',
+                  contentLanguage: 'en-US',
+                  contentDisposition: 'attachment; filename="people coding.JPEG"',
+                },
+                public: true,
+              },
+            ];
+
+            const fileMock = createFileMock({ saveExpectedArgs });
+            const expectedFileNames = ['/tmp/strapi/4l0ngH45h.jpeg', '/tmp/strapi/4l0ngH45h.jpeg'];
+            const bucketMock = createBucketMock({ fileMock, expectedFileNames });
+            const Storage = class {
+              bucket(bucketName) {
+                assertionsCount += 1;
+                assert.equal(bucketName, 'any bucket');
+                return bucketMock;
+              }
+            };
+
+            mockRequire('@google-cloud/storage', { Storage });
+            const provider = mockRequire.reRequire('../../lib/provider');
+            const config = {
+              serviceAccount: {
+                project_id: '123',
+                client_email: 'my@email.org',
+                private_key: 'a random key',
+              },
+              bucketName: 'any bucket',
+              metadata: (file) => ({
+                cacheControl: `public, max-age=${60 * 60 * 24 * 7}`, // One week
+                contentLanguage: 'en-US',
+                contentDisposition: `attachment; filename="${file.name}"`,
+              }),
             };
             const providerInstance = provider.init(config);
             await providerInstance.upload(fileData);
