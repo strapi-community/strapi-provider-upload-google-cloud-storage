@@ -171,7 +171,7 @@ Function that is executed to compute the metadata for a file when it is uploaded
 
 When no function is provided, the following metadata is used:
 
-```json
+```js
 {
   contentDisposition: `inline; filename="${file.name}"`,
 }
