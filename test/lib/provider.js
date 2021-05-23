@@ -11,7 +11,6 @@ const {
 describe('/lib/provider.js', () => {
   describe('#checkServiceAccount', () => {
     describe('when config is invalid', () => {
-
       it('must throw error "Bucket name" is required!', () => {
         const error = new Error('"Bucket name" is required!');
         assert.throws(() => checkServiceAccount(), error);
@@ -472,10 +471,7 @@ describe('/lib/provider.js', () => {
             ];
 
             const fileMock = createFileMock({ saveExpectedArgs });
-            const expectedFileNames = [
-              '/tmp/strapi/4l0ngH45h.jpeg',
-              '/tmp/strapi/4l0ngH45h.jpeg',
-            ];
+            const expectedFileNames = ['/tmp/strapi/4l0ngH45h.jpeg', '/tmp/strapi/4l0ngH45h.jpeg'];
             const bucketMock = createBucketMock({ fileMock, expectedFileNames });
             const Storage = class {
               bucket(bucketName) {
