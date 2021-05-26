@@ -165,6 +165,12 @@ Boolean to define uniform access, when uniform bucket-level access is enabled
 - Default value : `false`
 - Optional
 
+#### `cacheMaxAge`:
+
+Number to set the cache-control header for uploaded files
+- Default value : `3600`
+- Optional
+
 ### `generateUploadFileName`:
 
 Function that is executed to generate the name of the uploaded file. This method can give more control over the file name and can for example be used to include a custom hashing function or dynamic path.
