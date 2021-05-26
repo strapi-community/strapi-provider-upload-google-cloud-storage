@@ -165,6 +165,12 @@ Boolean to define uniform access, when uniform bucket-level access is enabled
 - Default value : `false`
 - Optional
 
+#### `cacheMaxAge`:
+
+Number to set the cache-control header for uploaded files
+- Default value : `3600`
+- Optional
+
 ### `metadata`:
 
 Function that is executed to compute the metadata for a file when it is uploaded. 
@@ -174,6 +180,7 @@ When no function is provided, the following metadata is used:
 ```js
 {
   contentDisposition: `inline; filename="${file.name}"`,
+  cacheControl: `public, max-age=${config.cacheMaxAge || 3600}`,
 }
 ```
 

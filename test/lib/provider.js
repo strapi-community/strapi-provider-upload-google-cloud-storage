@@ -461,7 +461,9 @@ describe('/lib/provider.js', () => {
               'file buffer information',
               {
                 contentType: 'image/jpeg',
+                gzip: 'auto',
                 metadata: {
+                  cacheControl: 'public, max-age=3600',
                   contentDisposition: 'inline; filename="people coding.JPEG"',
                 },
                 public: true,
@@ -499,6 +501,7 @@ describe('/lib/provider.js', () => {
             const saveExpectedArgs = [
               'file buffer information',
               {
+                gzip: 'auto',
                 contentType: 'image/jpeg',
                 metadata: {
                   cacheControl: 'public, max-age=604800',
@@ -576,8 +579,10 @@ describe('/lib/provider.js', () => {
             const saveExpectedArgs = [
               'file buffer information',
               {
+                gzip: 'auto',
                 contentType: 'image/jpeg',
                 metadata: {
+                  cacheControl: 'public, max-age=604800',
                   contentDisposition: 'inline; filename="people coding.JPEG"',
                 },
                 public: true,
@@ -608,6 +613,7 @@ describe('/lib/provider.js', () => {
                 private_key: 'a random key',
               },
               bucketName: 'random-bucket',
+              cacheMaxAge: 60 * 60 * 24 * 7, // one week
             };
             const providerInstance = provider.init(config);
             await providerInstance.upload(fileData);
