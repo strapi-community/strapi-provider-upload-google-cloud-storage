@@ -1,5 +1,7 @@
 const { strict: assert } = require('assert');
 const mockRequire = require('mock-require');
+const path = require('path');
+const slugify = require('slugify');
 const {
   checkServiceAccount,
   checkBucket,
@@ -537,6 +539,54 @@ describe('/lib/provider.js', () => {
                 contentLanguage: 'en-US',
                 contentDisposition: `attachment; filename="${file.name}"`,
               }),
+            };
+            const providerInstance = provider.init(config);
+            await providerInstance.upload(fileData);
+            assert.equal(assertionsCount, 6);
+            mockRequire.stop('@google-cloud/storage');
+          });
+
+          it('must save file with custom file name generator', async () => {
+            const saveExpectedArgs = [
+              'file buffer information',
+              {
+                gzip: 'auto',
+                contentType: 'image/jpeg',
+                metadata: {
+                  cacheControl: 'public, max-age=3600',
+                  contentDisposition: 'inline; filename="people coding.JPEG"',
+                },
+                public: true,
+              },
+            ];
+
+            const fileMock = createFileMock({ saveExpectedArgs });
+            const expectedFileNames = [
+              'jpeg/people-coding-da2f32c2de25f0360d6a5e129dcf9cbc.jpeg',
+              'jpeg/people-coding-da2f32c2de25f0360d6a5e129dcf9cbc.jpeg',
+            ];
+            const bucketMock = createBucketMock({ fileMock, expectedFileNames });
+            const Storage = class {
+              bucket(bucketName) {
+                assertionsCount += 1;
+                assert.equal(bucketName, 'any bucket');
+                return bucketMock;
+              }
+            };
+            mockRequire('@google-cloud/storage', { Storage });
+            const provider = mockRequire.reRequire('../../lib/provider');
+            const config = {
+              serviceAccount: {
+                project_id: '123',
+                client_email: 'my@email.org',
+                private_key: 'a random key',
+              },
+              bucketName: 'any bucket',
+              generateUploadFileName: (file) => {
+                const hash = 'da2f32c2de25f0360d6a5e129dcf9cbc';
+                const extension = file.ext.toLowerCase().substring(1);
+                return `${extension}/${slugify(path.parse(file.name).name)}-${hash}.${extension}`;
+              },
             };
             const providerInstance = provider.init(config);
             await providerInstance.upload(fileData);

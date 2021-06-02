@@ -199,6 +199,26 @@ Example:
 
 The available properties can be found in the [Cloud Storage JSON API documentation](https://cloud.google.com/storage/docs/json_api/v1/objects/insert#request_properties_JSON).
 
+### `generateUploadFileName`:
+
+Function that is executed to generate the name of the uploaded file. This method can give more control over the file name and can for example be used to include a custom hashing function or dynamic path.
+
+When no function is provided, the [default algorithm](lib/provider.js) is used.
+
+- Default value: `undefined`
+- Optional
+
+Example:
+
+```js
+  generateUploadFileName: (file) => {
+    const hash = ...; // Some hashing function, for example MD-5
+    const extension = file.ext.toLowerCase().substring(1);
+    return `${extension}/${slugify(path.parse(file.name).name)}-${hash}.${extension}`;
+  },
+```
+
+
 ## FAQ
 
 ### Common errors
