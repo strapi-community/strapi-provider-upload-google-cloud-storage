@@ -225,6 +225,27 @@ Example:
   },
 ```
 
+### `getContentType`:
+
+Function that is executed to get the content type of the uploaded file.
+
+When no function is provided, the default content type of the file (`file.mime` is used).
+
+- Default value: `undefined`
+- Optional
+
+Example:
+
+```js
+  getContentType: (file) => {
+    switch ((file && file.ext || '').toLowerCase()) {
+      case '.avif':
+        return 'image/avif';
+      default:
+        return file.mime;
+    }
+  },
+```
 
 ## FAQ
 
