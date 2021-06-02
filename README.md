@@ -247,9 +247,6 @@ Follow this step :
 - Copy the full content of the file
 - Paste it under the variable `ServiceAccount` in `plugins.js` config file in JSON
 
-## Resources
-
-* [MIT License](LICENSE)
 
 ## Links
 
@@ -257,7 +254,15 @@ Follow this step :
 - [Strapi community on Slack](http://slack.strapi.io)
 - [Strapi news on Twitter](https://twitter.com/strapijs)
 
-## Support
+## Community support
 
-- [Slack](http://slack.strapi.io) (Highly recommended for faster support)
 - [GitHub](https://github.com/Lith/strapi-provider-upload-google-cloud-storage) (Bug reports, contributions)
+  
+You can also used official support platform of Strapi, and search `@Lith` (maintainer) 
+
+- [Discord](https://discord.strapi.io) (For live discussion with the Community and Strapi team)
+- [Community Forum](https://forum.strapi.io) (Questions and Discussions)
+
+## License
+
+See the [MIT License](LICENSE) file for licensing information.

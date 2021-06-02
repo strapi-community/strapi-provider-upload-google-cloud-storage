@@ -21,7 +21,7 @@ We are using [GitHub Issues](https://github.com/Lith/strapi-provider-upload-goog
 
 ## Contribution Prerequisites
 
-* You have [Node](https://nodejs.org/en/) at v10.x.x only and [Yarn](https://yarnpkg.com/en/) at v1.2.0+.
+* You have [Node](https://nodejs.org/en/) at v12.x.x only and [Yarn](https://yarnpkg.com/en/) at v1.2.0+.
 * You are familiar with Git.
 
 This project is using `Yarn` so you need to use it for installation package.
