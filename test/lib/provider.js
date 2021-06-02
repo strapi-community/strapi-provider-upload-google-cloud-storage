@@ -635,6 +635,50 @@ describe('/lib/provider.js', () => {
             assert.equal(assertionsCount, 6);
             mockRequire.stop('@google-cloud/storage');
           });
+
+          it('must save file with custom content type', async () => {
+            const saveExpectedArgs = [
+              'file buffer information',
+              {
+                contentType: 'application/x-test',
+                gzip: 'auto',
+                metadata: {
+                  cacheControl: 'public, max-age=3600',
+                  contentDisposition: 'inline; filename="people coding.JPEG"',
+                },
+                public: true,
+              },
+            ];
+
+            const fileMock = createFileMock({ saveExpectedArgs });
+            const expectedFileNames = ['/tmp/strapi/4l0ngH45h.jpeg', '/tmp/strapi/4l0ngH45h.jpeg'];
+            const bucketMock = createBucketMock({ fileMock, expectedFileNames });
+            const Storage = class {
+              bucket(bucketName) {
+                assertionsCount += 1;
+                assert.equal(bucketName, 'any bucket');
+                return bucketMock;
+              }
+            };
+
+            mockRequire('@google-cloud/storage', { Storage });
+            const provider = mockRequire.reRequire('../../lib/provider');
+            const config = {
+              serviceAccount: {
+                project_id: '123',
+                client_email: 'my@email.org',
+                private_key: 'a random key',
+              },
+              bucketName: 'any bucket',
+              getContentType: () => {
+                return 'application/x-test';
+              },
+            };
+            const providerInstance = provider.init(config);
+            await providerInstance.upload(fileData);
+            assert.equal(assertionsCount, 6);
+            mockRequire.stop('@google-cloud/storage');
+          });
         });
 
         describe('when file exists in bucket', () => {
