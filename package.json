@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lith/strapi-provider-upload-google-cloud-storage.git"
+    "url": "git+https://github.com/AlphaFounders/strapi-provider-upload-google-cloud-storage.git"
   },
   "keywords": [
     "strapi",
