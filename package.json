@@ -1,5 +1,5 @@
 {
-  "name": "strapi-provider-upload-google-cloud-storage",
+  "name": "@alphafoundes/strapi-provider-upload-google-cloud-storage",
   "version": "3.6.3",
   "description": "(Non-official) Google Cloud Storage Provider for Strapi Upload",
   "directories": {
@@ -27,23 +27,26 @@
     "isProvider": true
   },
   "author": {
-    "name": "Vanessa Pasque",
-    "email": "lith@amykron.com"
+    "name": "",
+    "email": ""
   },
   "maintainers": [
     {
-      "name": "Vanessa Pasque",
-      "email": "lith@amykron.com"
+      "name": "",
+      "email": ""
     }
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Lith/strapi-provider-upload-google-cloud-storage/issues"
+    "url": "https://github.com/AlphaFounders/strapi-provider-upload-google-cloud-storage/issues"
   },
-  "homepage": "https://github.com/Lith/strapi-provider-upload-google-cloud-storage#readme",
+  "homepage": "https://github.com/AlphaFounders/strapi-provider-upload-google-cloud-storage#readme",
   "engines": {
     "node": ">=10.0.0",
     "npm": ">=6.0.0"
+  },
+  "publishConfig": {
+    "@alphafounders:registry": "https://npm.pkg.github.com"
   },
   "dependencies": {
     "@google-cloud/storage": "^5.8.5",
