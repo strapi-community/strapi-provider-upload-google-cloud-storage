@@ -1,5 +1,5 @@
 {
-  "name": "@alphafoundes/strapi-provider-upload-google-cloud-storage",
+  "name": "@alphafounders/strapi-provider-upload-google-cloud-storage",
   "version": "3.6.3",
   "description": "(Non-official) Google Cloud Storage Provider for Strapi Upload",
   "directories": {
