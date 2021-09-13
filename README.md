@@ -116,8 +116,8 @@ module.exports = ({ env }) => ({
         bucketName: env('GCS_BUCKET_NAME'),
         basePath: env('GCS_BASE_PATH'),
         baseUrl: env('GCS_BASE_URL'),
-        publicFiles: env('GCS_PUBLIC_FILES'),
-        uniform: env('GCS_UNIFORM'),
+        publicFiles: env.bool('GCS_PUBLIC_FILES'),
+        uniform: env.bool('GCS_UNIFORM'),
       },
     },
     //...
