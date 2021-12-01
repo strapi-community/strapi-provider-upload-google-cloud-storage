@@ -1,16 +1,20 @@
 # Security Policy
 
+Strapi V4 is now release, please use release >= 4.0.0
+For old version, please refer to older release.
+
 ## Supported Versions
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 3.6.8   | :white_check_mark: |
-| 3.6.5   | :white_check_mark: |
-| 3.6.3   | :white_check_mark: |
-| 3.6.2   | :white_check_mark: |
-| 3.4.6   | :white_check_mark: |
-| 3.1.6   | :white_check_mark: |
-| 3.1.5   | :white_check_mark: |
+| 4.0.0   | :white_check_mark: |
+| 3.6.8   | :x: |
+| 3.6.5   | :x: |
+| 3.6.3   | :x: |
+| 3.6.2   | :x: |
+| 3.4.6   | :x: |
+| 3.1.6   | :x: |
+| 3.1.5   | :x: |
 | 3.1.4   | :x: |
 | 3.0.x   | :x: |
 

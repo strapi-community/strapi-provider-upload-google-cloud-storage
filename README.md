@@ -63,16 +63,18 @@ This works only for deployment to GCP products such as App Engine, Cloud Run, an
 
 Edit `./config/plugins.js`
 
-```javascript
+```js
 module.exports = {
     upload: {
-        provider: 'google-cloud-storage',
+      config: {
+        provider: 'strapi-provider-upload-google-cloud-storage',
         providerOptions: {
             bucketName: '#bucketName#',
             publicFiles: false,
             uniform: false,
             basePath: '',
         },
+      },
     },
     //...
 }
@@ -82,10 +84,11 @@ module.exports = {
 
 Edit `./config/plugins.js`
 
-```javascript
+```js
 module.exports = {
     upload: {
-        provider: 'google-cloud-storage',
+      config: {
+        provider: 'strapi-provider-upload-google-cloud-storage',
         providerOptions: {
             bucketName: '#bucketName#',
             publicFiles: true,
@@ -95,6 +98,7 @@ module.exports = {
             basePath: '',
         },
       },
+    },
     //...
 }
 ```
@@ -107,17 +111,19 @@ This file, under `config/env/{env}/` will be overriding default configuration pr
 
 **Example with environment variable**
 
-```javascript
+```js
 module.exports = ({ env }) => ({
     upload: {
-      provider: 'google-cloud-storage',
-      providerOptions: {
-        serviceAccount: env.json('GCS_SERVICE_ACCOUNT'),
-        bucketName: env('GCS_BUCKET_NAME'),
-        basePath: env('GCS_BASE_PATH'),
-        baseUrl: env('GCS_BASE_URL'),
-        publicFiles: env.bool('GCS_PUBLIC_FILES'),
-        uniform: env.bool('GCS_UNIFORM'),
+      config: {
+        provider: 'strapi-provider-upload-google-cloud-storage',
+        providerOptions: {
+          serviceAccount: env.json('GCS_SERVICE_ACCOUNT'),
+          bucketName: env('GCS_BUCKET_NAME'),
+          basePath: env('GCS_BASE_PATH'),
+          baseUrl: env('GCS_BASE_URL'),
+          publicFiles: env('GCS_PUBLIC_FILES'),
+          uniform: env('GCS_UNIFORM'),
+        },
       },
     },
     //...
@@ -125,6 +131,38 @@ module.exports = ({ env }) => ({
 ```
 
 Environment variable can be changed has your way.
+
+## Setting up `strapi::security` middlewares to avoid CSP blocked url
+
+Edit `./config/middlewares.js`
+- In the field `img-src` and `media-src` add your own CDN url, by default it's `storage.googleapis.com` but you need to add your own CDN url
+
+```js
+module.exports = [
+  'strapi::errors',
+  {
+    name: 'strapi::security',
+    config: {
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          'connect-src': ["'self'", 'https:'],
+          'img-src': ["'self'", 'data:', 'blob:', 'storage.googleapis.com'],
+          'media-src': ["'self'", 'data:', 'blob:', 'storage.googleapis.com'],
+          upgradeInsecureRequests: null,
+        },
+      },
+    },
+  },
+  'strapi::cors',
+  'strapi::poweredBy',
+  'strapi::logger',
+  'strapi::query',
+  'strapi::body',
+  'strapi::favicon',
+  'strapi::public',
+];
+```
 
 ## How to configure variable ?
 
@@ -225,27 +263,6 @@ Example:
   },
 ```
 
-### `getContentType`:
-
-Function that is executed to get the content type of the uploaded file.
-
-When no function is provided, the default content type of the file (`file.mime` is used).
-
-- Default value: `undefined`
-- Optional
-
-Example:
-
-```js
-  getContentType: (file) => {
-    switch ((file && file.ext || '').toLowerCase()) {
-      case '.avif':
-        return 'image/avif';
-      default:
-        return file.mime;
-    }
-  },
-```
 
 ## FAQ
 
@@ -268,6 +285,10 @@ Follow this step :
 - Copy the full content of the file
 - Paste it under the variable `ServiceAccount` in `plugins.js` config file in JSON
 
+## Migration
+
+Due to release of Strapi v4, you need to migrate your databases files informations.
+Follow our [migration guide](./MIGRATION_GUIDE.md).
 
 ## Links
 
