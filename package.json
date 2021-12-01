@@ -1,20 +1,7 @@
 {
   "name": "strapi-provider-upload-google-cloud-storage",
-  "version": "3.6.8",
+  "version": "4.0.0",
   "description": "(Non-official) Google Cloud Storage Provider for Strapi Upload",
-  "directories": {
-    "lib": "./lib"
-  },
-  "main": "./lib",
-  "scripts": {
-    "test": "mocha",
-    "lint": "eslint .",
-    "coverage": "nyc npm run test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Lith/strapi-provider-upload-google-cloud-storage.git"
-  },
   "keywords": [
     "strapi",
     "upload",
@@ -23,9 +10,11 @@
     "storage",
     "gcp"
   ],
-  "strapi": {
-    "isProvider": true
+  "homepage": "https://github.com/Lith/strapi-provider-upload-google-cloud-storage#readme",
+  "bugs": {
+    "url": "https://github.com/Lith/strapi-provider-upload-google-cloud-storage/issues"
   },
+  "license": "MIT",
   "author": {
     "name": "Vanessa Pasque",
     "email": "lith@amykron.com"
@@ -36,29 +25,40 @@
       "email": "lith@amykron.com"
     }
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Lith/strapi-provider-upload-google-cloud-storage/issues"
+  "main": "./lib",
+  "directories": {
+    "lib": "./lib"
   },
-  "homepage": "https://github.com/Lith/strapi-provider-upload-google-cloud-storage#readme",
-  "engines": {
-    "node": ">=10.0.0",
-    "npm": ">=6.0.0"
+  "scripts": {
+    "test": "mocha",
+    "lint": "eslint .",
+    "coverage": "nyc npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lith/strapi-provider-upload-google-cloud-storage.git"
   },
   "dependencies": {
-    "@google-cloud/storage": "^5.14.4",
-    "slugify": "^1.6.0"
+    "@google-cloud/storage": "^5.16.0",
+    "slugify": "^1.6.3"
   },
   "devDependencies": {
     "codecov": "^3.8.3",
-    "eslint": "^7.32.0",
+    "eslint": "^8.3.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^3.4.1",
-    "mocha": "^8.4.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "mocha": "^9.1.3",
     "mock-require": "^3.0.3",
     "nyc": "^15.1.0",
-    "prettier": "^2.4.1"
+    "prettier": "^2.5.0"
+  },
+  "engines": {
+    "node": ">=12.x.x <=16.x.x",
+    "npm": ">=6.0.0"
+  },
+  "strapi": {
+    "isProvider": true
   }
 }
