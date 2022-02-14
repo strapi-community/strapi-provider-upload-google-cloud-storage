@@ -66,17 +66,15 @@ Edit `./config/plugins.js`
 ```js
 module.exports = {
     upload: {
-      config: {
-        provider: 'strapi-provider-upload-google-cloud-storage',
-        providerOptions: {
-            bucketName: '#bucketName#',
-            publicFiles: false,
-            uniform: false,
-            basePath: '',
-        },
+      provider: 'google-cloud-storage',
+      providerOptions: {
+        bucketName: '#bucketName#',
+        publicFiles: false,
+        uniform: false,
+        basePath: '',
       },
     },
-    //...
+  //...
 }
 ```
 
@@ -87,16 +85,14 @@ Edit `./config/plugins.js`
 ```js
 module.exports = {
     upload: {
-      config: {
-        provider: 'strapi-provider-upload-google-cloud-storage',
-        providerOptions: {
-            bucketName: '#bucketName#',
-            publicFiles: true,
-            uniform: false,
-            serviceAccount: {}, // replace `{}` with your serviceAccount JSON object
-            baseUrl: 'https://storage.googleapis.com/{bucket-name}',
-            basePath: '',
-        },
+      provider: 'google-cloud-storage',
+      providerOptions: {
+          bucketName: '#bucketName#',
+          publicFiles: true,
+          uniform: false,
+          serviceAccount: {}, // replace `{}` with your serviceAccount JSON object
+          baseUrl: 'https://storage.googleapis.com/{bucket-name}',
+          basePath: '',
       },
     },
     //...
@@ -114,16 +110,14 @@ This file, under `config/env/{env}/` will be overriding default configuration pr
 ```js
 module.exports = ({ env }) => ({
     upload: {
-      config: {
-        provider: 'strapi-provider-upload-google-cloud-storage',
-        providerOptions: {
-          serviceAccount: env.json('GCS_SERVICE_ACCOUNT'),
-          bucketName: env('GCS_BUCKET_NAME'),
-          basePath: env('GCS_BASE_PATH'),
-          baseUrl: env('GCS_BASE_URL'),
-          publicFiles: env('GCS_PUBLIC_FILES'),
-          uniform: env('GCS_UNIFORM'),
-        },
+      provider: 'google-cloud-storage',
+      providerOptions: {
+        serviceAccount: env.json('GCS_SERVICE_ACCOUNT'),
+        bucketName: env('GCS_BUCKET_NAME'),
+        basePath: env('GCS_BASE_PATH'),
+        baseUrl: env('GCS_BASE_URL'),
+        publicFiles: env('GCS_PUBLIC_FILES'),
+        uniform: env('GCS_UNIFORM'),
       },
     },
     //...
