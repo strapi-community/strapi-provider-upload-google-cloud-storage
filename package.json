@@ -1,6 +1,6 @@
 {
-  "name": "strapi-provider-upload-google-cloud-storage",
-  "version": "4.0.0",
+  "name": "@strapi-community/strapi-provider-upload-google-cloud-storage",
+  "version": "4.1.7",
   "description": "(Non-official) Google Cloud Storage Provider for Strapi Upload",
   "keywords": [
     "strapi",
@@ -10,9 +10,9 @@
     "storage",
     "gcp"
   ],
-  "homepage": "https://github.com/Lith/strapi-provider-upload-google-cloud-storage#readme",
+  "homepage": "https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage#readme",
   "bugs": {
-    "url": "https://github.com/Lith/strapi-provider-upload-google-cloud-storage/issues"
+    "url": "https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage/issues"
   },
   "license": "MIT",
   "author": {
@@ -36,11 +36,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lith/strapi-provider-upload-google-cloud-storage.git"
+    "url": "git+https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage.git"
   },
   "dependencies": {
-    "@google-cloud/storage": "^5.16.0",
-    "slugify": "^1.6.3"
+    "@google-cloud/storage": "^5.19.0",
+    "slugify": "^1.6.5"
   },
   "devDependencies": {
     "codecov": "^3.8.3",
@@ -60,5 +60,8 @@
   },
   "strapi": {
     "isProvider": true
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

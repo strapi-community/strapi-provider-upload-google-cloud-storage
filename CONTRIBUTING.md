@@ -15,7 +15,7 @@ This project and everyone participating in it are governed by a [Code of Conduct
 
 ## Bugs
 
-We are using [GitHub Issues](https://github.com/Lith/strapi-provider-upload-google-cloud-storage/issues) to manage our public bugs. We keep a close eye on this so before filing a new issue, try to make sure the problem does not already exist.
+We are using [GitHub Issues](https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage/issues) to manage our public bugs. We keep a close eye on this so before filing a new issue, try to make sure the problem does not already exist.
 
 ---
 
@@ -64,7 +64,7 @@ The team will review your pull request and will either merge it, request changes
 Before submitting an issue you need to make sure:
 
 - You are experiencing a concrete technical issue with this plugin.
-- You have already searched for related [issues](https://github.com/Lith/strapi-provider-upload-google-cloud-storage/issues), and found none open (if you found a related _closed_ issue, please link to it from your post).
+- You have already searched for related [issues](https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage/issues), and found none open (if you found a related _closed_ issue, please link to it from your post).
 - Your issue title is concise, on-topic and polite.
 - You can and do provide steps to reproduce your issue.
 - You have tried all the following (if relevant) and your issue remains:

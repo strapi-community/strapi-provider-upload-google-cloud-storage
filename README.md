@@ -1,8 +1,8 @@
 # strapi-provider-upload-google-cloud-storage
 
-[![npm version](https://img.shields.io/npm/v/strapi-provider-upload-google-cloud-storage.svg)](https://www.npmjs.org/package/strapi-provider-upload-google-cloud-storage)
-[![npm downloads](https://img.shields.io/npm/dm/strapi-provider-upload-google-cloud-storage.svg)](https://www.npmjs.org/package/strapi-provider-upload-google-cloud-storage)
-[![coverage](https://img.shields.io/codecov/c/gh/lith/strapi-provider-upload-google-cloud-storage/master)](https://www.npmjs.org/package/strapi-provider-upload-google-cloud-storage)
+[![npm version](https://img.shields.io/npm/v/@strapi-community/strapi-provider-upload-google-cloud-storage.svg)](https://www.npmjs.org/package/@strapi-community/strapi-provider-upload-google-cloud-storage)
+[![npm downloads](https://img.shields.io/npm/dm/@strapi-community/strapi-provider-upload-google-cloud-storage.svg)](https://www.npmjs.org/package/@strapi-community/strapi-provider-upload-google-cloud-storage)
+[![coverage](https://img.shields.io/codecov/c/gh/@strapi-community/strapi-provider-upload-google-cloud-storage/master)](https://www.npmjs.org/package/@strapi-community/strapi-provider-upload-google-cloud-storage)
 
 **Non-Official** Google Cloud Storage Provider for Strapi Upload
 
@@ -12,12 +12,12 @@ Install the package from your app root directory
 
 with `npm`
 ```
-npm install strapi-provider-upload-google-cloud-storage --save
+npm install @strapi-community/strapi-provider-upload-google-cloud-storage --save
 ```
 
 or `yarn`
 ```
-yarn add strapi-provider-upload-google-cloud-storage
+yarn add @strapi-community/strapi-provider-upload-google-cloud-storage
 ```
 
 ## <a name="create-bucket"></a> Create your Bucket on Google Cloud Storage
@@ -298,7 +298,7 @@ Follow our [migration guide](./MIGRATION_GUIDE.md).
 
 ## Community support
 
-- [GitHub](https://github.com/Lith/strapi-provider-upload-google-cloud-storage) (Bug reports, contributions)
+- [GitHub](https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage) (Bug reports, contributions)
   
 You can also used official support platform of Strapi, and search `@Lith` (maintainer) 
 
