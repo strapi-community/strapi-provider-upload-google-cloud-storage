@@ -67,7 +67,7 @@ Edit `./config/plugins.js`
 module.exports = {
     upload: {
       config: {
-        provider: 'strapi-provider-upload-google-cloud-storage',
+        provider: '@strapi-community/strapi-provider-upload-google-cloud-storage',
         providerOptions: {
             bucketName: '#bucketName#',
             publicFiles: false,
@@ -88,7 +88,7 @@ Edit `./config/plugins.js`
 module.exports = {
     upload: {
       config: {
-        provider: 'strapi-provider-upload-google-cloud-storage',
+        provider: '@strapi-community/strapi-provider-upload-google-cloud-storage',
         providerOptions: {
             bucketName: '#bucketName#',
             publicFiles: true,
