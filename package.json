@@ -1,6 +1,6 @@
 {
   "name": "@strapi-community/strapi-provider-upload-google-cloud-storage",
-  "version": "4.1.7",
+  "version": "4.2.3",
   "description": "(Non-official) Google Cloud Storage Provider for Strapi Upload",
   "keywords": [
     "strapi",
@@ -39,7 +39,7 @@
     "url": "git+https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage.git"
   },
   "dependencies": {
-    "@google-cloud/storage": "^5.19.0",
+    "@google-cloud/storage": "^5.20.5",
     "slugify": "^1.6.5"
   },
   "devDependencies": {
@@ -55,8 +55,8 @@
     "prettier": "^2.5.0"
   },
   "engines": {
-    "node": ">=12.x.x <=16.x.x",
-    "npm": ">=6.0.0"
+    "node": "16",
+    "npm": "8"
   },
   "strapi": {
     "isProvider": true
