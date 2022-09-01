@@ -6,19 +6,20 @@ For old version, please refer to older release.
 ## Supported Versions
 
 | Version | Supported          |
-|---------| ------------------ |
-| 4.2.3   | :white_check_mark: |
+|---------|--------------------|
+| 4.3.6   | :white_check_mark: |
+| 4.2.3   | :x:                |
 | 4.1.7   | :white_check_mark: |
 | 4.0.0   | :white_check_mark: |
-| 3.6.8   | :x: |
-| 3.6.5   | :x: |
-| 3.6.3   | :x: |
-| 3.6.2   | :x: |
-| 3.4.6   | :x: |
-| 3.1.6   | :x: |
-| 3.1.5   | :x: |
-| 3.1.4   | :x: |
-| 3.0.x   | :x: |
+| 3.6.8   | :x:                |
+| 3.6.5   | :x:                |
+| 3.6.3   | :x:                |
+| 3.6.2   | :x:                |
+| 3.4.6   | :x:                |
+| 3.1.6   | :x:                |
+| 3.1.5   | :x:                |
+| 3.1.4   | :x:                |
+| 3.0.x   | :x:                |
 
 ## Reporting a Vulnerability
 
