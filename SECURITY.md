@@ -7,6 +7,7 @@ For old version, please refer to older release.
 
 | Version | Supported          |
 |---------|--------------------|
+| 4.5.6   | :white_check_mark: |
 | 4.3.6   | :white_check_mark: |
 | 4.2.3   | :x:                |
 | 4.1.7   | :white_check_mark: |
