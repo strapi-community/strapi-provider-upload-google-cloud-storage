@@ -55,7 +55,7 @@
     "prettier": "^2.5.0"
   },
   "engines": {
-    "node": "16",
+    "node": ">=16.19.0 <=18.x.x",
     "npm": "8"
   },
   "strapi": {
