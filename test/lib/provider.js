@@ -546,7 +546,7 @@ describe('/lib/provider.js', () => {
             mockRequire.stop('@google-cloud/storage');
           });
 
-          it('must save file with custom file name generator', async () => {
+          it('must save file with custom (async) file name generator', async () => {
             const saveExpectedArgs = [
               'file buffer information',
               {
@@ -582,8 +582,10 @@ describe('/lib/provider.js', () => {
                 private_key: 'a random key',
               },
               bucketName: 'any bucket',
-              generateUploadFileName: (file) => {
-                const hash = 'da2f32c2de25f0360d6a5e129dcf9cbc';
+              generateUploadFileName: async (file) => {
+                const hash = await new Promise((resolve) =>
+                  setTimeout(resolve('da2f32c2de25f0360d6a5e129dcf9cbc'), 0)
+                );
                 const extension = file.ext.toLowerCase().substring(1);
                 return `${extension}/${slugify(path.parse(file.name).name)}-${hash}.${extension}`;
               },

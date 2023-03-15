@@ -256,8 +256,8 @@ When no function is provided, the [default algorithm](lib/provider.js) is used.
 Example:
 
 ```js
-  generateUploadFileName: (file) => {
-    const hash = ...; // Some hashing function, for example MD-5
+  generateUploadFileName: async (file) => {
+    const hash = await ...; // Some hashing function, for example MD-5
     const extension = file.ext.toLowerCase().substring(1);
     return `${extension}/${slugify(path.parse(file.name).name)}-${hash}.${extension}`;
   },
