@@ -361,7 +361,7 @@ describe('/lib/provider.js', () => {
       }
     });
 
-    it('must return an object with upload and delete methods', () => {
+    it('must return an object with upload, delete, isPrivate and getSignedUrl methods', () => {
       const config = {
         serviceAccount: {
           project_id: '123',
@@ -377,6 +377,10 @@ describe('/lib/provider.js', () => {
       assert.equal(typeof result.upload, 'function');
       assert.ok(Object.keys(result).includes('delete'));
       assert.equal(typeof result.delete, 'function');
+      assert.ok(Object.keys(result).includes('isPrivate'));
+      assert.equal(typeof result.isPrivate, 'function');
+      assert.ok(Object.keys(result).includes('getSignedUrl'));
+      assert.equal(typeof result.getSignedUrl, 'function');
     });
 
     it('must instanciate google cloud storage with right configurations', () => {
