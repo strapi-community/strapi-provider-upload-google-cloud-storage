@@ -80,6 +80,10 @@ module.exports = {
 }
 ```
 
+If you set `publicFiles` to `false`, the assets will be signed on the Content Manager (not the Content API) and the Media Library. Consequently, they will only be visible to users who are authenticated.
+
+You can set the expiry time of the signed URL by setting the `expires` option in the `providerOptions` object. See more in [expires](#expires).
+
 **Example with credentials for outside GCP account**
 
 Edit `./config/plugins.js`
@@ -214,6 +218,15 @@ Number to set the cache-control header for uploaded files.
 Value to define if files are uploaded and stored with gzip compression.
 - Possible values: `true`, `false`, `auto`
 - Default value : `auto`
+- Optional
+
+#### `expires`:
+
+Value to define expiration time for signed URLS. Files are signed when `publicFiles` is set to `false`.
+
+- Possible values: `Date`, `number`, `string`
+- Default value : `900000` (15 minutes)
+- Max value : `604800000` (7 days)
 - Optional
 
 ### `metadata`:
