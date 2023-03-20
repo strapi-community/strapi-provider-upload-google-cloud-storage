@@ -80,7 +80,7 @@ module.exports = {
 }
 ```
 
-If you set `publicFiles` to `false`, the assets will be signed on the Content Manager (not the Content API) and the Media Library. Consequently, they will only be visible to users who are authenticated.
+If you set `publicFiles` to `false`, the assets will be signed on the Content Manager (not the Content API). Consequently, they will only be visible to users who are authenticated.
 
 You can set the expiry time of the signed URL by setting the `expires` option in the `providerOptions` object. See more in [expires](#expires).
 
