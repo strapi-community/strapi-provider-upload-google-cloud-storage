@@ -197,13 +197,19 @@ Define base path to save each media document.
 
 #### `publicFiles`:
 
-Boolean to define a public attribute to file when it upload to storage.
+Boolean to define a public attribute to file when upload file to storage.
 - Default value : `true`
 - Optional
 
 #### `uniform`:
 
-Boolean to define uniform access, when uniform bucket-level access is enabled.
+Boolean to define `uniform` access, when uniform bucket-level access is enabled.
+- Default value : `false`
+- Optional
+
+#### `skipCheckBucket`:
+
+Boolean to define `skipCheckBucket`, when skipCheckBucket is enabled, we skip to check if the bucket exist. It's useful for private bucket.
 - Default value : `false`
 - Optional
 

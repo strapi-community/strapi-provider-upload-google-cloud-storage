@@ -383,7 +383,7 @@ describe('/lib/provider.js', () => {
       assert.equal(typeof result.getSignedUrl, 'function');
     });
 
-    it('must instanciate google cloud storage with right configurations', () => {
+    it('must instance google cloud storage with right configurations', () => {
       let assertionsCount = 0;
       mockRequire('@google-cloud/storage', {
         Storage: class {
