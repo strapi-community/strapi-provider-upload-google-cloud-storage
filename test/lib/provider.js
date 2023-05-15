@@ -5,6 +5,7 @@ const slugify = require('slugify');
 const {
   checkServiceAccount,
   checkBucket,
+  setConfigField,
   mergeConfigs,
   generateUploadFileName,
   init,
@@ -198,6 +199,28 @@ describe('/lib/provider.js', () => {
         await assert.rejects(checkBucket(gcsMock, 'my-bucket'), error);
 
         assert.equal(assertCount, 2);
+      });
+    });
+  });
+
+  describe('#setConfigField', () => {
+    describe('when config field is undefined', () => {
+      it('must return default value true', async () => {
+        await assert.equal(setConfigField(undefined, true), true);
+      });
+      it('must return default value false', async () => {
+        await assert.equal(setConfigField(undefined, false), false);
+      });
+      it('must return error if not a string with true or false value', async () => {
+        let fieldValue = 'undefined';
+        const error = new Error(`Invalid boolean value for ${fieldValue}!`);
+        assert.throws(() => setConfigField(fieldValue, true), error);
+      });
+      it('must return true boolean value if boolean value is true and default value is false', async () => {
+        await assert.equal(setConfigField(true, false), true);
+      });
+      it('must return true boolean value if boolean value is true and default value is true', async () => {
+        await assert.equal(setConfigField(false, true), false);
       });
     });
   });
