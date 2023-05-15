@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/@strapi-community/strapi-provider-upload-google-cloud-storage.svg)](https://www.npmjs.org/package/@strapi-community/strapi-provider-upload-google-cloud-storage)
 [![npm downloads](https://img.shields.io/npm/dm/@strapi-community/strapi-provider-upload-google-cloud-storage.svg)](https://www.npmjs.org/package/@strapi-community/strapi-provider-upload-google-cloud-storage)
-[![coverage](https://img.shields.io/codecov/c/gh/@strapi-community/strapi-provider-upload-google-cloud-storage/master)](https://www.npmjs.org/package/@strapi-community/strapi-provider-upload-google-cloud-storage)
+[![coverage](https://codecov.io/gh/strapi-community/strapi-provider-upload-google-cloud-storage/branch/master/graph/badge.svg?token=p4KW9ytA6u)](https://codecov.io/gh/strapi-community/strapi-provider-upload-google-cloud-storage)
 
 **Non-Official** Google Cloud Storage Provider for Strapi Upload
 
