@@ -785,6 +785,67 @@ describe('/lib/provider.js', () => {
             assert.equal(assertionsCount, 9);
             mockRequire.stop('@google-cloud/storage');
           });
+
+          it('should replace replace media', async () => {
+            const baseUrl = 'https://storage.googleapis.com';
+            const url = `${baseUrl}/random-bucket/l0ngH45h/l0ngH45h.jpeg`;
+
+            const fileData = {
+              ext: '.JPEG',
+              buffer: 'file buffer information',
+              mime: 'image/jpeg',
+              name: 'people coding.JPEG',
+              related: [],
+              hash: 'l0ngH45h',
+              url,
+            };
+
+            const saveExpectedArgs = [
+              'file buffer information',
+              {
+                gzip: 'auto',
+                contentType: 'image/jpeg',
+                metadata: {
+                  cacheControl: 'public, max-age=604800',
+                  contentDisposition: 'inline; filename="people coding.JPEG"',
+                },
+                public: true,
+              },
+            ];
+
+            const fileMock = createFileMock({ saveExpectedArgs });
+            const expectedFileNames = [
+              'l0ngH45h/l0ngH45h.jpeg',
+              'l0ngH45h/l0ngH45h.jpeg',
+              'l0ngH45h/l0ngH45h.jpeg',
+            ];
+            const bucketMock = createBucketMock({ fileMock, expectedFileNames });
+            const Storage = class {
+              bucket(bucketName) {
+                assertionsCount += 1;
+                assert.equal(bucketName, 'random-bucket');
+                console.count();
+                return bucketMock;
+              }
+            };
+
+            mockRequire('@google-cloud/storage', { Storage });
+            const provider = mockRequire.reRequire('../../lib/provider');
+            const config = {
+              serviceAccount: {
+                project_id: '123',
+                client_email: 'my@email.org',
+                private_key: 'a random key',
+              },
+              enableMediaReplace: true,
+              bucketName: 'random-bucket',
+              cacheMaxAge: 60 * 60 * 24 * 7, // one week
+            };
+            const providerInstance = provider.init(config);
+            await providerInstance.upload(fileData);
+            assert.equal(assertionsCount, 6);
+            mockRequire.stop('@google-cloud/storage');
+          });
         });
       });
     });
