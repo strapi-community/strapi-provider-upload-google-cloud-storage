@@ -100,6 +100,7 @@ module.exports = {
             serviceAccount: {}, // replace `{}` with your serviceAccount JSON object
             baseUrl: 'https://storage.googleapis.com/{bucket-name}',
             basePath: '',
+            enableMediaReplace: true // instead of deleting, media will be replaced
         },
       },
     },
