@@ -97,7 +97,7 @@ module.exports = {
             bucketName: '#bucketName#',
             publicFiles: true,
             uniform: false,
-            serviceAccount: {}, // replace `{}` with your serviceAccount JSON object
+            serviceAccount: {}, // replace `{}` with your serviceAccount JSON object or json file path
             baseUrl: 'https://storage.googleapis.com/{bucket-name}',
             basePath: '',
         },

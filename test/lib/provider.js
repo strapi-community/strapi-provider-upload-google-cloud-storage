@@ -25,7 +25,7 @@ describe('/lib/provider.js', () => {
           bucketName: 'some-bucket',
         };
         const error = new Error(
-          'Error parsing data "Service Account JSON", please be sure to copy/paste the full JSON file.'
+          'Error parsing "Service Account JSON". Please ensure you have provided a valid JSON object, JSON string, or path to a JSON file.'
         );
         assert.throws(() => checkServiceAccount(config), error);
       });
