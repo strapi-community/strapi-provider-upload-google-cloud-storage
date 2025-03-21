@@ -1,5 +1,5 @@
 const { strict: assert } = require('assert');
-const provider = require('../../lib/index');
+const provider = require('../lib/index');
 
 describe('/lib/index.js', () => {
   it('must export init function', () => {

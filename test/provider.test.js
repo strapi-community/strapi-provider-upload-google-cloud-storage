@@ -9,7 +9,7 @@ const {
   mergeConfigs,
   generateUploadFileName,
   init,
-} = require('../../lib/provider');
+} = require('../lib/provider');
 
 describe('/lib/provider.js', () => {
   describe('#checkServiceAccount', () => {
@@ -424,7 +424,7 @@ describe('/lib/provider.js', () => {
           }
         },
       });
-      const provider = mockRequire.reRequire('../../lib/provider');
+      const provider = mockRequire.reRequire('../lib/provider');
       const config = {
         serviceAccount: {
           project_id: '123',
@@ -511,7 +511,7 @@ describe('/lib/provider.js', () => {
             };
 
             mockRequire('@google-cloud/storage', { Storage });
-            const provider = mockRequire.reRequire('../../lib/provider');
+            const provider = mockRequire.reRequire('../lib/provider');
             const config = {
               serviceAccount: {
                 project_id: '123',
@@ -553,7 +553,7 @@ describe('/lib/provider.js', () => {
             };
 
             mockRequire('@google-cloud/storage', { Storage });
-            const provider = mockRequire.reRequire('../../lib/provider');
+            const provider = mockRequire.reRequire('../lib/provider');
             const config = {
               serviceAccount: {
                 project_id: '123',
@@ -601,7 +601,7 @@ describe('/lib/provider.js', () => {
               }
             };
             mockRequire('@google-cloud/storage', { Storage });
-            const provider = mockRequire.reRequire('../../lib/provider');
+            const provider = mockRequire.reRequire('../lib/provider');
             const config = {
               serviceAccount: {
                 project_id: '123',
@@ -649,7 +649,7 @@ describe('/lib/provider.js', () => {
             };
 
             mockRequire('@google-cloud/storage', { Storage });
-            const provider = mockRequire.reRequire('../../lib/provider');
+            const provider = mockRequire.reRequire('../lib/provider');
             const config = {
               serviceAccount: {
                 project_id: '123',
@@ -691,7 +691,7 @@ describe('/lib/provider.js', () => {
             };
 
             mockRequire('@google-cloud/storage', { Storage });
-            const provider = mockRequire.reRequire('../../lib/provider');
+            const provider = mockRequire.reRequire('../lib/provider');
             const config = {
               serviceAccount: {
                 project_id: '123',
@@ -770,7 +770,7 @@ describe('/lib/provider.js', () => {
             };
 
             mockRequire('@google-cloud/storage', { Storage });
-            const provider = mockRequire.reRequire('../../lib/provider');
+            const provider = mockRequire.reRequire('../lib/provider');
             const config = {
               serviceAccount: {
                 project_id: '123',
@@ -830,7 +830,7 @@ describe('/lib/provider.js', () => {
                 }
               },
             });
-            const provider = mockRequire.reRequire('../../lib/provider');
+            const provider = mockRequire.reRequire('../lib/provider');
             const config = {
               serviceAccount: {
                 project_id: '123',
@@ -885,7 +885,7 @@ describe('/lib/provider.js', () => {
                   }
                 },
               });
-              const provider = mockRequire.reRequire('../../lib/provider');
+              const provider = mockRequire.reRequire('../lib/provider');
               const config = {
                 serviceAccount: {
                   project_id: '123',
@@ -930,7 +930,7 @@ describe('/lib/provider.js', () => {
                   }
                 },
               });
-              const provider = mockRequire.reRequire('../../lib/provider');
+              const provider = mockRequire.reRequire('../lib/provider');
               const config = {
                 serviceAccount: {
                   project_id: '123',
