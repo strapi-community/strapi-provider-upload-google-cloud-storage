@@ -10,13 +10,11 @@ Icon
 .Trashes
 ._*
 
-
 ############################
 # Linux
 ############################
 
 *~
-
 
 ############################
 # Windows
@@ -30,7 +28,6 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
-
 
 ############################
 # Packages
@@ -60,7 +57,6 @@ $RECYCLE.BIN/
 *.out
 *.pid
 
-
 ############################
 # Logs and databases
 ############################
@@ -69,7 +65,6 @@ $RECYCLE.BIN/
 *.log
 *.sql
 *.sqlite
-
 
 ############################
 # Misc.
@@ -82,7 +77,6 @@ ssl
 .idea
 nbproject
 
-
 ############################
 # Node.js
 ############################
@@ -93,12 +87,13 @@ pids
 logs
 results
 build
+dist
 node_modules
 .node_history
-
 
 ############################
 # Tests
 ############################
 
 test
+coverage
