@@ -55,7 +55,7 @@ You will find below many examples of configurations, for each example :
 2. Set the `#bucketName#` field and replace `Bucket-name` by yours [previously create](#create-bucket)
 3. Default `baseUrl` is working, but you can replace it by yours (if you use a custom baseUrl)
 4. Save the configuration file
-5. Enjoy !
+5. Enjoy!
 
 **Example with application default credentials (minimal setup)**
 
@@ -241,10 +241,10 @@ Function that is executed to compute the metadata for a file when it is uploaded
 
 When no function is provided, the following metadata is used:
 
-```js
+```ts
 {
   contentDisposition: `inline; filename="${file.name}"`,
-  cacheControl: `public, max-age=${config.cacheMaxAge || 3600}`,
+  cacheControl: `public, max-age=3600`,
 }
 ```
 
@@ -253,8 +253,8 @@ When no function is provided, the following metadata is used:
 
 Example:
 
-```js
-  metadata: (file) => ({
+```ts
+  metadata: (file: File) => ({
     cacheControl: `public, max-age=${60 * 60 * 24 * 7}`, // One week
     contentLanguage: 'en-US',
     contentDisposition: `attachment; filename="${file.name}"`,
@@ -267,19 +267,38 @@ The available properties can be found in the [Cloud Storage JSON API documentati
 
 Function that is executed to generate the name of the uploaded file. This method can give more control over the file name and can for example be used to include a custom hashing function or dynamic path.
 
-When no function is provided, the [default algorithm](lib/provider.js) is used.
+When no function is provided, the [default algorithm](src/types.ts#L77-L82) is used.
 
 - Default value: `undefined`
 - Optional
 
 Example:
 
-```js
-  generateUploadFileName: async (file) => {
+```ts
+  generateUploadFileName: async (basePath: string, file: File) => {
     const hash = await ...; // Some hashing function, for example MD-5
     const extension = file.ext.toLowerCase().substring(1);
     return `${extension}/${slugify(path.parse(file.name).name)}-${hash}.${extension}`;
   },
+```
+
+### `getContentType`:
+
+Function that is executed to get the content type for a file when it is uploaded. 
+
+When no function is provided, the following content type is used:
+
+```ts
+file.mime
+```
+
+- Default value: `undefined`
+- Optional
+
+Example:
+
+```ts
+  getContentType: (file: File) => file.mime;
 ```
 
 
