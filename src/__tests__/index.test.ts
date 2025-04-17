@@ -1,8 +1,11 @@
 import { Storage } from '@google-cloud/storage';
 import slugify from 'slugify';
 import path from 'path';
-import provider from '../index';
+import { Readable } from 'stream';
+import type { ReadStream } from 'fs';
+import { pipeline } from 'node:stream/promises';
 import type { File } from '../types';
+import provider from '../index';
 
 const mockedConfig = {
   serviceAccount: {
@@ -26,10 +29,23 @@ const mockedFileData = {
   url: '/',
 };
 
+const mockedFileStreamData = {
+  ext: '.JPEG',
+  buffer: Buffer.from('file buffer information'),
+  mime: 'image/jpeg',
+  name: 'people coding.JPEG',
+  hash: '4l0ngH45h',
+  path: '/tmp/strapi',
+  size: 985.43,
+  sizeInBytes: 98543,
+  url: '/',
+  stream: Readable.from(Buffer.from('file buffer information')) as unknown as ReadStream,
+};
+
 const mockedFile = {
   exists: jest.fn().mockReturnValue([false]),
   save: jest.fn(),
-  createWriteStream: jest.fn(),
+  createWriteStream: jest.fn().mockReturnValue('STREAM'),
   delete: jest.fn(),
   getSignedUrl: jest
     .fn()
@@ -46,7 +62,12 @@ const mockedStorage = {
 };
 
 jest.mock('@google-cloud/storage', () => ({
+  __esModule: true,
   Storage: jest.fn(() => mockedStorage),
+}));
+
+jest.mock('node:stream/promises', () => ({
+  pipeline: jest.fn(),
 }));
 
 describe('Provider', () => {
@@ -150,7 +171,7 @@ describe('Provider', () => {
     test('Saves file with custom (async) file name generator', async () => {
       const config = {
         ...mockedConfig,
-        async generateUploadFileName(file: File) {
+        async generateUploadFileName(basePath: string, file: File) {
           const hash = await new Promise((resolve) => {
             setTimeout(() => resolve('da2f32c2de25f0360d6a5e129dcf9cbc'), 0);
           });
@@ -269,7 +290,84 @@ describe('Provider', () => {
         `An error occurs when we try to retrieve the Bucket "${mockedConfig.bucketName}". Check if bucket exist on Google Cloud Platform.`
       );
 
-      expect(providerInstance.upload(mockedFileData)).rejects.toThrow(error);
+      await expect(providerInstance.upload(mockedFileData)).rejects.toThrow(error);
+
+      expect(mockedStorage.bucket).toHaveBeenCalledTimes(1);
+      expect(mockedStorage.bucket).toHaveBeenCalledWith(mockedConfig.bucketName);
+      expect(mockedBucket.exists).toHaveBeenCalledTimes(1);
+      expect(mockedBucket.file).not.toHaveBeenCalled();
+      expect(mockedFile.exists).not.toHaveBeenCalled();
+      expect(mockedFile.delete).not.toHaveBeenCalled();
+      expect(mockedFile.save).not.toHaveBeenCalled();
+
+      mockedBucket.exists = jest.fn(() => [true]);
+    });
+  });
+
+  describe('UploadStream', () => {
+    test('Saves file with default values', async () => {
+      const providerInstance = provider.init(mockedConfig);
+      await providerInstance.uploadStream(mockedFileStreamData);
+
+      expect(mockedStorage.bucket).toHaveBeenCalledTimes(1);
+      expect(mockedStorage.bucket).toHaveBeenCalledWith(mockedConfig.bucketName);
+      expect(mockedBucket.exists).toHaveBeenCalledTimes(1);
+      expect(mockedBucket.file).toHaveBeenCalledTimes(1);
+      expect(mockedBucket.file).toHaveBeenCalledWith('base/path/tmp/strapi/4l0ngH45h.jpeg');
+      expect(mockedFile.exists).toHaveBeenCalledTimes(1);
+      expect(mockedFile.createWriteStream).toHaveBeenCalledTimes(1);
+      expect(mockedFile.createWriteStream).toHaveBeenCalledWith({
+        contentType: 'image/jpeg',
+        gzip: 'auto',
+        metadata: {
+          cacheControl: 'public, max-age=3600',
+          contentDisposition: 'inline; filename="people coding.JPEG"',
+        },
+        public: true,
+      });
+      expect(pipeline).toHaveBeenCalledTimes(1);
+      expect(pipeline).toHaveBeenCalledWith(mockedFileStreamData.stream, 'STREAM');
+    });
+
+    test('Deletes file and save a new one if file exists in bucket', async () => {
+      mockedFile.exists = jest.fn(() => [true]);
+
+      const providerInstance = provider.init(mockedConfig);
+      await providerInstance.uploadStream(mockedFileStreamData);
+
+      expect(mockedStorage.bucket).toHaveBeenCalledTimes(2);
+      expect(mockedStorage.bucket).toHaveBeenCalledWith(mockedConfig.bucketName);
+      expect(mockedBucket.exists).toHaveBeenCalledTimes(1);
+      expect(mockedBucket.file).toHaveBeenCalledTimes(2);
+      expect(mockedBucket.file).toHaveBeenCalledWith('base/path/tmp/strapi/4l0ngH45h.jpeg');
+      expect(mockedFile.exists).toHaveBeenCalledTimes(1);
+      expect(mockedFile.delete).toHaveBeenCalledTimes(1);
+      expect(mockedFile.createWriteStream).toHaveBeenCalledTimes(1);
+      expect(mockedFile.createWriteStream).toHaveBeenCalledWith({
+        contentType: 'image/jpeg',
+        gzip: 'auto',
+        metadata: {
+          cacheControl: 'public, max-age=3600',
+          contentDisposition: 'inline; filename="people coding.JPEG"',
+        },
+        public: true,
+      });
+      expect(pipeline).toHaveBeenCalledTimes(1);
+      expect(pipeline).toHaveBeenCalledWith(mockedFileStreamData.stream, 'STREAM');
+
+      mockedFile.exists = jest.fn(() => [false]);
+    });
+
+    test('Throws error if bucket does not exist', async () => {
+      mockedBucket.exists = jest.fn(() => [false]);
+
+      const providerInstance = provider.init(mockedConfig);
+
+      const error = new Error(
+        `An error occurs when we try to retrieve the Bucket "${mockedConfig.bucketName}". Check if bucket exist on Google Cloud Platform.`
+      );
+
+      await expect(providerInstance.uploadStream(mockedFileStreamData)).rejects.toThrow(error);
 
       expect(mockedStorage.bucket).toHaveBeenCalledTimes(1);
       expect(mockedStorage.bucket).toHaveBeenCalledWith(mockedConfig.bucketName);
@@ -294,6 +392,16 @@ describe('Provider', () => {
       expect(mockedBucket.file).toHaveBeenCalledTimes(1);
       expect(mockedBucket.file).toHaveBeenCalledWith('base/path/tmp/strapi/4l0ngH45h.jpeg');
       expect(mockedFile.delete).toHaveBeenCalledTimes(1);
+    });
+
+    test('Does not delete file, if url is not provided', async () => {
+      mockedFileData.url = '';
+      const providerInstance = provider.init(mockedConfig);
+      await providerInstance.delete(mockedFileData);
+
+      expect(mockedStorage.bucket).toHaveBeenCalledTimes(0);
+      expect(mockedBucket.file).toHaveBeenCalledTimes(0);
+      expect(mockedFile.delete).toHaveBeenCalledTimes(0);
     });
 
     test('Throws error if file cannot be deleted', async () => {
@@ -402,7 +510,7 @@ describe('Provider', () => {
       expect(mockedFile.getSignedUrl).toHaveBeenCalledWith({
         version: 'v4',
         action: 'read',
-        expires: 1000,
+        expires: new Date('2020-01-01').valueOf() + 1000,
       });
     });
   });

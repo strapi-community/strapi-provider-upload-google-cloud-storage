@@ -1,99 +1,30 @@
-import path from 'node:path';
-import slugify from 'slugify';
 import type { Bucket, Storage } from '@google-cloud/storage';
-import type { DefaultOptions, File, FileAttributes, Options } from './types';
+import z from 'zod';
+import {
+  optionsSchema,
+  type DefaultOptions,
+  type File,
+  type FileAttributes,
+  type Options,
+} from './types';
 
-const getMetadata = (file: File, cacheMaxAge: number) => {
-  const asciiFileName = file.name.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
-  return {
-    contentDisposition: `inline; filename="${asciiFileName}"`,
-    cacheControl: `public, max-age=${cacheMaxAge}`,
-  };
-};
-
-export const parseConfigField = <T = string | boolean>(
-  fieldValue: T | undefined,
-  defaultValue: T
-) => {
-  switch (typeof fieldValue) {
-    case 'undefined':
-      return defaultValue;
-    case 'boolean':
-      return fieldValue;
-    case 'string':
-      if (['true', 'false'].includes(fieldValue)) {
-        return fieldValue === 'true';
-      }
-      return fieldValue;
-    default:
-      return defaultValue;
-  }
-};
-
-export const getConfigDefaultValues = (config: DefaultOptions): Options => {
-  if (!config?.bucketName) {
-    throw new Error('"Bucket name" is required!');
-  }
-
-  return {
-    ...config,
-    baseUrl: config.baseUrl ?? 'https://storage.googleapis.com/{bucket-name}',
-    basePath: config.basePath ?? '',
-    publicFiles: parseConfigField(config.publicFiles, true),
-    uniform: parseConfigField(config.uniform, false),
-    skipCheckBucket: parseConfigField(config.skipCheckBucket, false),
-    gzip: parseConfigField(config.gzip, 'auto'),
-    cacheMaxAge: config.cacheMaxAge ?? 3600,
-    metadata:
-      typeof config.metadata === 'function'
-        ? config.metadata
-        : (file: File) => getMetadata(file, config.cacheMaxAge ?? 3600),
-    getContentType:
-      typeof config.getContentType === 'function'
-        ? config.getContentType
-        : (file: File) => file.mime,
-  };
-};
-
-const parseServiceAccount = (serviceAccount: Options['serviceAccount']) => {
+export const getConfigDefaultValues = (config: DefaultOptions) => {
   try {
-    return typeof serviceAccount === 'string' ? JSON.parse(serviceAccount) : serviceAccount;
-  } catch (e) {
-    throw new Error(
-      'Error parsing data "Service Account JSON", please be sure to copy/paste the full JSON file.'
-    );
+    return optionsSchema.parse(config);
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      throw new Error(err.issues[0]?.message);
+    } else {
+      throw err;
+    }
   }
 };
 
-export const checkServiceAccount = (serviceAccount: Options['serviceAccount']) => {
-  if (serviceAccount) {
-    const gcsOptions = parseServiceAccount(serviceAccount);
-
-    if (!gcsOptions.project_id) {
-      throw new Error(
-        'Error parsing data "Service Account JSON". Missing "project_id" field in JSON file.'
-      );
-    }
-    if (!gcsOptions.client_email) {
-      throw new Error(
-        'Error parsing data "Service Account JSON". Missing "client_email" field in JSON file.'
-      );
-    }
-    if (!gcsOptions.private_key) {
-      throw new Error(
-        'Error parsing data "Service Account JSON". Missing "private_key" field in JSON file.'
-      );
-    }
-
-    return gcsOptions;
+export const getExpires = (expires: Date | number | string) => {
+  if (typeof expires === 'number') {
+    return Date.now() + expires;
   }
-};
-
-export const generateUploadFileName = (basePath: string, file: File) => {
-  const filePath = `${file.path ? file.path.slice(1) : file.hash}/`;
-  const extension = file.ext?.toLowerCase() || '';
-  const fileName = slugify(path.basename(file.hash));
-  return `${basePath}${filePath}${fileName}${extension}`;
+  return expires;
 };
 
 export const checkBucket = async (bucket: Bucket, bucketName: string) => {
@@ -111,13 +42,8 @@ export const prepareUploadFile = async (
   basePath: string,
   GCS: Storage
 ) => {
-  const fullFileName =
-    typeof config.generateUploadFileName === 'function'
-      ? await config.generateUploadFileName(file)
-      : generateUploadFileName(basePath, file);
-
+  const fullFileName = await config.generateUploadFileName(basePath, file);
   const bucket = GCS.bucket(config.bucketName);
-
   if (!config.skipCheckBucket) {
     await checkBucket(bucket, config.bucketName);
   }

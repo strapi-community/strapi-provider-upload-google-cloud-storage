@@ -2,12 +2,12 @@ import type { GetSignedUrlConfig } from '@google-cloud/storage';
 import { Storage } from '@google-cloud/storage';
 import { pipeline } from 'node:stream/promises';
 import type { DefaultOptions, File } from './types';
-import { checkServiceAccount, getConfigDefaultValues, prepareUploadFile } from './utils';
+import { getConfigDefaultValues, getExpires, prepareUploadFile } from './utils';
 
 export default {
   init(providedConfig: DefaultOptions) {
     const config = getConfigDefaultValues(providedConfig);
-    const serviceAccount = checkServiceAccount(config.serviceAccount);
+    const { serviceAccount } = config;
 
     const GCS = new Storage(
       serviceAccount && {
@@ -18,7 +18,7 @@ export default {
         },
       }
     );
-    
+
     const basePath = `${config.basePath}/`.replace(/^\/+/, '');
     const baseUrl = config.baseUrl.replace('{bucket-name}', config.bucketName);
 
@@ -92,7 +92,7 @@ export default {
         const options: GetSignedUrlConfig = {
           version: 'v4',
           action: 'read',
-          expires: config.expires || Date.now() + 15 * 60 * 1000,
+          expires: getExpires(config.expires),
         };
         const fileName = file.url.replace(`${baseUrl}/`, '');
         const [url] = await GCS.bucket(config.bucketName).file(fileName).getSignedUrl(options);

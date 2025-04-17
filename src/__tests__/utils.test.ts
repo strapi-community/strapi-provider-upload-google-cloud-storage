@@ -1,12 +1,6 @@
 import type { Bucket } from '@google-cloud/storage';
 import type { DefaultOptions, File } from '../types';
-import {
-  checkBucket,
-  checkServiceAccount,
-  generateUploadFileName,
-  getConfigDefaultValues,
-  parseConfigField,
-} from '../utils';
+import { checkBucket, getConfigDefaultValues, getExpires } from '../utils';
 
 const defaultOptions: DefaultOptions = {
   bucketName: 'GC_BUCKET_NAME',
@@ -17,6 +11,7 @@ const defaultOptions: DefaultOptions = {
   skipCheckBucket: false,
   gzip: 'auto',
   cacheMaxAge: 3600,
+  expires: 900000,
 };
 
 const options: DefaultOptions = {
@@ -28,8 +23,10 @@ const options: DefaultOptions = {
   skipCheckBucket: true,
   gzip: false,
   cacheMaxAge: 1800,
+  expires: 800000,
   metadata: jest.fn(),
   getContentType: jest.fn(),
+  generateUploadFileName: jest.fn(),
 };
 
 const mockedBucketName = 'my-bucket';
@@ -44,6 +41,7 @@ describe('Utils', () => {
         ...defaultOptions,
         metadata: expect.any(Function),
         getContentType: expect.any(Function),
+        generateUploadFileName: expect.any(Function),
       });
     });
     test('Does not add default values if config is provided', () => {
@@ -53,8 +51,14 @@ describe('Utils', () => {
     test('Throws an error if bucket name is not present', () => {
       // @ts-expect-error Test wrong configuration
       const functionWithoutBucketName = () => getConfigDefaultValues({});
-      const error = new Error('"Bucket name" is required!');
+      const error = new Error('Property "bucketName" is required');
       expect(functionWithoutBucketName).toThrow(error);
+    });
+    test('Throws an error if bucket name is not a string', () => {
+      // @ts-expect-error Test wrong configuration
+      const functionWithNotStringBucketName = () => getConfigDefaultValues({ bucketName: 1341234 });
+      const error = new Error('Property "bucketName" must be a string');
+      expect(functionWithNotStringBucketName).toThrow(error);
     });
   });
 
@@ -65,21 +69,30 @@ describe('Utils', () => {
         const error = new Error(
           'Error parsing data "Service Account JSON", please be sure to copy/paste the full JSON file.'
         );
-        expect(() => checkServiceAccount(serviceAccount)).toThrow(error);
+        expect(() => getConfigDefaultValues({ ...defaultOptions, serviceAccount })).toThrow(error);
       });
       test('Throws error when serviceAccount can be parsed as a JSON, but does not accomplish with correct values', () => {
         const serviceAccount = '{"project_id": "123", "client_email": "my@email.org"}';
         const error = new Error(
           'Error parsing data "Service Account JSON". Missing "private_key" field in JSON file.'
         );
-        expect(() => checkServiceAccount(serviceAccount)).toThrow(error);
+        expect(() => getConfigDefaultValues({ ...defaultOptions, serviceAccount })).toThrow(error);
       });
       test('Throws error when serviceAccount does not have a project_id field', () => {
         const serviceAccount = {};
         const error = new Error(
           'Error parsing data "Service Account JSON". Missing "project_id" field in JSON file.'
         );
-        expect(() => checkServiceAccount(serviceAccount)).toThrow(error);
+        // @ts-expect-error Test wrong configuration
+        expect(() => getConfigDefaultValues({ ...defaultOptions, serviceAccount })).toThrow(error);
+      });
+      test('Throws error when project_id field is not a string', () => {
+        const serviceAccount = { project_id: 1 };
+        const error = new Error(
+          'Error parsing data "Service Account JSON". Property "project_id" must be a string.'
+        );
+        // @ts-expect-error Test wrong configuration
+        expect(() => getConfigDefaultValues({ ...defaultOptions, serviceAccount })).toThrow(error);
       });
       test('Throws error when serviceAccount does not have a client_email field', () => {
         const serviceAccount = {
@@ -88,7 +101,19 @@ describe('Utils', () => {
         const error = new Error(
           'Error parsing data "Service Account JSON". Missing "client_email" field in JSON file.'
         );
-        expect(() => checkServiceAccount(serviceAccount)).toThrow(error);
+        // @ts-expect-error Test wrong configuration
+        expect(() => getConfigDefaultValues({ ...defaultOptions, serviceAccount })).toThrow(error);
+      });
+      test('Throws error when client_email field is not a string', () => {
+        const serviceAccount = {
+          project_id: '123',
+          client_email: 1,
+        };
+        const error = new Error(
+          'Error parsing data "Service Account JSON". Property "client_email" must be a string.'
+        );
+        // @ts-expect-error Test wrong configuration
+        expect(() => getConfigDefaultValues({ ...defaultOptions, serviceAccount })).toThrow(error);
       });
       test('Throws error when serviceAccount does not have a private_key field', () => {
         const serviceAccount = {
@@ -98,13 +123,29 @@ describe('Utils', () => {
         const error = new Error(
           'Error parsing data "Service Account JSON". Missing "private_key" field in JSON file.'
         );
-        expect(() => checkServiceAccount(serviceAccount)).toThrow(error);
+        // @ts-expect-error Test wrong configuration
+        expect(() => getConfigDefaultValues({ ...defaultOptions, serviceAccount })).toThrow(error);
+      });
+      test('Throws error when private_key field is not a string', () => {
+        const serviceAccount = {
+          project_id: '123',
+          client_email: 'my@email.org',
+          private_key: 123,
+        };
+        const error = new Error(
+          'Error parsing data "Service Account JSON". Property "private_key" must be a string.'
+        );
+        // @ts-expect-error Test wrong configuration
+        expect(() => getConfigDefaultValues({ ...defaultOptions, serviceAccount })).toThrow(error);
       });
     });
     describe('Valid config', () => {
       test('Accepts undefined service account', () => {
         const config = undefined;
-        const serviceAccount = checkServiceAccount(config);
+        const { serviceAccount } = getConfigDefaultValues({
+          ...defaultOptions,
+          serviceAccount: config,
+        });
         expect(serviceAccount).toEqual(undefined);
       });
       test('Accepts minimal configurations', () => {
@@ -113,7 +154,10 @@ describe('Utils', () => {
           client_email: 'my@email.org',
           private_key: 'a random key',
         };
-        const serviceAccount = checkServiceAccount(config);
+        const { serviceAccount } = getConfigDefaultValues({
+          ...defaultOptions,
+          serviceAccount: config,
+        });
         expect(serviceAccount).toEqual(config);
       });
       test('Accepts minimal configurations with json string', () => {
@@ -122,7 +166,10 @@ describe('Utils', () => {
           "client_email": "my@email.org",
           "private_key": "a random key"
         }`;
-        const serviceAccount = checkServiceAccount(config);
+        const { serviceAccount } = getConfigDefaultValues({
+          ...defaultOptions,
+          serviceAccount: config,
+        });
         expect(serviceAccount).toEqual({
           project_id: '123',
           client_email: 'my@email.org',
@@ -157,31 +204,31 @@ describe('Utils', () => {
     });
   });
 
-  describe('Parses config fields', () => {
-    test('returns default value true', () => {
-      expect(parseConfigField(undefined, true)).toEqual(true);
+  describe('Get expires param', () => {
+    beforeAll(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2024-01-01T00:00:00Z').getTime());
     });
-    test('returns default value false', () => {
-      expect(parseConfigField(undefined, false)).toEqual(false);
+
+    afterAll(() => {
+      jest.useRealTimers();
     });
-    test('returns true boolean value if boolean value is true and default value is false', () => {
-      expect(parseConfigField(true, false)).toEqual(true);
+
+    it('should return Date.now() + number if expires is a number', () => {
+      const now = Date.now();
+      expect(getExpires(1000)).toEqual(now + 1000);
+      expect(getExpires(0)).toEqual(now);
     });
-    test('returns false boolean value if boolean value is false and default value is false', () => {
-      expect(parseConfigField(false, true)).toEqual(false);
+
+    it('should return the Date object if expires is a Date', () => {
+      const future = new Date('2025-01-01T00:00:00Z');
+      expect(getExpires(future)).toEqual(future);
     });
-    test('returns true boolean value if true string is provided', () => {
-      expect(parseConfigField('true', 'false')).toEqual(true);
-    });
-    test('returns false boolean value if false string is provided', () => {
-      expect(parseConfigField('false', 'true')).toEqual(false);
-    });
-    test('returns default value string', () => {
-      expect(parseConfigField(undefined, 'auto')).toEqual('auto');
+
+    it('should return the string if expires is a string', () => {
+      const expiresStr = '2025-01-01T00:00:00Z';
+      expect(getExpires(expiresStr)).toEqual(expiresStr);
     });
   });
-
-  describe('Merges configs', () => {});
 
   describe('Generates upload file name', () => {
     test('Saves filename with right name', async () => {
@@ -223,13 +270,12 @@ describe('Utils', () => {
         ],
         [
           'base-path/',
-          'base-path/boris-smokrovic_9fd5439b3e/boris-smokrovic_9fd5439b3e.jpeg',
+          'base-path/boris-smokrovic_9fd5439b3e/boris-smokrovic_9fd5439b3e',
           {
             name: 'boris-smokrovic',
             alternativeText: undefined,
             caption: undefined,
             hash: 'boris-smokrovic_9fd5439b3e',
-            ext: '.jpeg',
             mime: 'image/jpeg',
             size: 897.78,
             width: 4373,
@@ -241,11 +287,11 @@ describe('Utils', () => {
         ],
         [
           'root/child/',
-          'root/child/thumbnail_boris-smokrovic_9fd5439b3e/thumbnail_boris-smokrovic_9fd5439b3e.jpeg',
+          'root/child/thumbnail_boris-smokrovic_9fd5439b3e/thumbnail_boris-smokrovic_9fd5439b3e.png',
           {
             hash: 'thumbnail_boris-smokrovic_9fd5439b3e',
-            ext: '.jpeg',
-            mime: 'image/jpeg',
+            ext: '.png',
+            mime: 'image/png',
             width: 234,
             height: 156,
             size: 8.18,
@@ -258,8 +304,10 @@ describe('Utils', () => {
         ],
       ];
 
+      const config = getConfigDefaultValues(defaultOptions);
+
       const runTest = async ([basePath, expectedFileName, fileData]: [string, string, File]) => {
-        const generatedFileName = generateUploadFileName(basePath, fileData);
+        const generatedFileName = config.generateUploadFileName(basePath, fileData);
         expect(generatedFileName).toEqual(expectedFileName);
       };
 
