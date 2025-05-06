@@ -4,7 +4,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/@strapi-community/strapi-provider-upload-google-cloud-storage.svg)](https://www.npmjs.org/package/@strapi-community/strapi-provider-upload-google-cloud-storage)
 [![coverage](https://codecov.io/gh/strapi-community/strapi-provider-upload-google-cloud-storage/branch/master/graph/badge.svg?token=p4KW9ytA6u)](https://codecov.io/gh/strapi-community/strapi-provider-upload-google-cloud-storage)
 
-**Non-Official** Google Cloud Storage Provider for Strapi Upload
+**Community** Google Cloud Storage Provider for Strapi Upload
 
 ## Installation
 
@@ -323,11 +323,6 @@ Follow this step :
 - Copy the full content of the file
 - Paste it under the variable `ServiceAccount` in `plugins.js` config file in JSON
 
-## Migration
-
-Due to release of Strapi v4, you need to migrate your databases files informations.
-Follow our [migration guide](./MIGRATION_GUIDE.md).
-
 ## Links
 
 - [Strapi website](http://strapi.io/)
@@ -338,7 +333,7 @@ Follow our [migration guide](./MIGRATION_GUIDE.md).
 
 - [GitHub](https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage) (Bug reports, contributions)
   
-You can also used official support platform of Strapi, and search `@Lith` (maintainer) 
+You can also used official support platform of Strapi, and search `[VirtusLab]` prefixed people (maintainers) 
 
 - [Discord](https://discord.strapi.io) (For live discussion with the Community and Strapi team)
 - [Community Forum](https://forum.strapi.io) (Questions and Discussions)
