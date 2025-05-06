@@ -1,19 +1,39 @@
-name: publish Node.js Package
-
+name: Publish to NPM
 on:
   release:
-    types: [created]
-
+    types: [published]
 jobs:
-  npm-publish:
+  publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-          registry-url: https://registry.npmjs.org/
-      - run: npm install
-      - run: npm publish
+          always-auth: true
+          node-version: 20
+          cache: 'yarn'
+          registry-url: 'https://registry.npmjs.org/'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Build the plugin
+        run: yarn build
+      - name: Get the release tag version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+      - name: Set package version
+        run: yarn version --new-version "${{ steps.get_version.outputs.VERSION }}" --no-git-tag-version
+      - name: Publish package
+        run: yarn publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Push version bump
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'chore: Bump version to ${{ steps.get_version.outputs.VERSION }}'
+          file_pattern: 'package.json'
+          branch: master
