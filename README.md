@@ -3,7 +3,7 @@
 </div>
 <div align="center">
   <h1>
-    <span style="display: block">Strapi Provider - Upload</span>
+    <span style="display: block">Strapi Provider Upload</span>
     <span style="display: block; font-size: 1.75rem">Google Cloud Storage</span>
   </h1>
   <p><strong>Community</strong> Google Cloud Storage Provider for Strapi Upload</p>
