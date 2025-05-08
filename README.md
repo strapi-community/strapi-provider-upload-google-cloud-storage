@@ -1,12 +1,35 @@
-# strapi-provider-upload-google-cloud-storage
+<div align="center" style="max-width: 10rem; margin: 0 auto">
+  <img style="width: 150px; height: auto;" src="https://www.sensinum.com/img/open-source/strapi-provider-upload-google-cloud-storage/logo.png" alt="Logo - Strapi Provider Upload - Google Cloud Storage" />
+</div>
+<div align="center">
+  <h1>Strapi Provider - Upload</h1>
+  <h2>Google Cloud Storage</h2>
+  <p><strong>Community</strong> Google Cloud Storage Provider for Strapi Upload</p>
+  <a href="https://www.npmjs.org/package/@strapi-community/strapi-provider-upload-google-cloud-storage">
+    <img alt="NPM version" src="https://img.shields.io/npm/v/@strapi-community/strapi-provider-upload-google-cloud-storage.svg">
+  </a>
+  <a href="https://www.npmjs.org/package/@strapi-community/strapi-provider-upload-google-cloud-storage">
+    <img src="https://img.shields.io/npm/dm/@strapi-community/strapi-provider-upload-google-cloud-storage.svg" alt="Monthly download on NPM" />
+  </a>
+  <a href="https://codecov.io/gh/strapi-community/strapi-provider-upload-google-cloud-storage">
+    <img src="https://codecov.io/gh/strapi-community/strapi-provider-upload-google-cloud-storage/branch/master/graph/badge.svg?token=p4KW9ytA6u" alt="codecov.io" />
+  </a>
+</div>
 
-[![npm version](https://img.shields.io/npm/v/@strapi-community/strapi-provider-upload-google-cloud-storage.svg)](https://www.npmjs.org/package/@strapi-community/strapi-provider-upload-google-cloud-storage)
-[![npm downloads](https://img.shields.io/npm/dm/@strapi-community/strapi-provider-upload-google-cloud-storage.svg)](https://www.npmjs.org/package/@strapi-community/strapi-provider-upload-google-cloud-storage)
-[![coverage](https://codecov.io/gh/strapi-community/strapi-provider-upload-google-cloud-storage/branch/master/graph/badge.svg?token=p4KW9ytA6u)](https://codecov.io/gh/strapi-community/strapi-provider-upload-google-cloud-storage)
+## 📋 Table of Contents
 
-**Community** Google Cloud Storage Provider for Strapi Upload
+- [📦 Installation](#installation)
+- [🪣 Create your Bucket on Google Cloud Storage](#create-bucket)
+- [🔐 Setting up Google authentication](#setup-auth)
+- [⚙️ Setting up the configuration file](#setting-up-the-configuration-file)
+- [🔒 Setting up `strapi::security` middlewares](#setting-up-strapisecurity-middlewares-to-avoid-csp-blocked-url)
+- [📝 Configuration Variables](#how-to-configure-variable)
+- [❓ FAQ](#faq)
+- [🔗 Links](#links)
+- [💬 Community support](#community-support)
+- [📄 License](#license)
 
-## Installation
+## 📦 Installation
 
 Install the package from your app root directory
 
@@ -20,7 +43,7 @@ or `yarn`
 yarn add @strapi-community/strapi-provider-upload-google-cloud-storage
 ```
 
-## <a name="create-bucket"></a> Create your Bucket on Google Cloud Storage
+## 🪣 <a name="create-bucket"></a> Create your Bucket on Google Cloud Storage
 
 The bucket should be created with **fine grained** access control, as the plugin will configure uploaded files with public read access.
 
@@ -30,7 +53,7 @@ The bucket should be created with **fine grained** access control, as the plugin
 ### Where my bucket can be located ?
 - https://cloud.google.com/storage/docs/locations
 
-## <a name="setup-auth"></a> Setting up Google authentication
+## 🔐 <a name="setup-auth"></a> Setting up Google authentication
 
 If you are deploying to a Google Cloud Platform product that supports [Application Default Credentials](https://cloud.google.com/docs/authentication/production#finding_credentials_automatically) (such as App Engine, Cloud Run, and Cloud Functions etc.), then you can skip this step. 
 
@@ -47,7 +70,7 @@ If you are deploying outside GCP, then follow these steps to set up authenticati
 8. Open the Strapi configuration file 
 9. Paste it into the "Service Account JSON" field (as `string` or `JSON`, be careful with indentation)
 
-## Setting up the configuration file
+## ⚙️ Setting up the configuration file
 
 You will find below many examples of configurations, for each example :
 
@@ -136,7 +159,7 @@ module.exports = ({ env }) => ({
 
 Environment variable can be changed has your way.
 
-## Setting up `strapi::security` middlewares to avoid CSP blocked url
+## 🔒 Setting up `strapi::security` middlewares to avoid CSP blocked url
 
 Edit `./config/middlewares.js`
 - In the field `img-src` and `media-src` add your own CDN url, by default it's `storage.googleapis.com` but you need to add your own CDN url
@@ -168,7 +191,7 @@ module.exports = [
 ];
 ```
 
-## How to configure variable ?
+## 📝 How to configure variable ?
 
 #### `serviceAccount` :
 
@@ -301,8 +324,7 @@ Example:
   getContentType: (file: File) => file.mime;
 ```
 
-
-## FAQ
+## ❓ FAQ
 
 ### Common errors
 
@@ -323,13 +345,13 @@ Follow this step :
 - Copy the full content of the file
 - Paste it under the variable `ServiceAccount` in `plugins.js` config file in JSON
 
-## Links
+## 🔗 Links
 
 - [Strapi website](http://strapi.io/)
 - [Strapi community on Slack](http://slack.strapi.io)
 - [Strapi news on Twitter](https://twitter.com/strapijs)
 
-## Community support
+## 💬 Community support
 
 - [GitHub](https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage) (Bug reports, contributions)
   
@@ -338,6 +360,6 @@ You can also used official support platform of Strapi, and search `[VirtusLab]` 
 - [Discord](https://discord.strapi.io) (For live discussion with the Community and Strapi team)
 - [Community Forum](https://forum.strapi.io) (Questions and Discussions)
 
-## License
+## 📄 License
 
 See the [MIT License](LICENSE) file for licensing information.
