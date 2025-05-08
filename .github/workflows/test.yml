@@ -1,6 +1,5 @@
 name: Test project
 on:
-  push:
   pull_request:
     branches:
       - master
