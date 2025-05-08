@@ -39,8 +39,6 @@ The team will review your pull request and will either merge it, request changes
       - `yarn test` or `npm run test`
     - Make sure your code lints 
       - `yarn lint` or `npm run lint`
-    - Check coverage report
-      - `yarn coverage` or `npm run coverage`
 2. Update the [README.md](README.md) with details of changes to the interface, this includes new environment 
    variables, exposed ports, useful file locations and container parameters.
 3. You need to Signed-off-by all of your commits before push, like this example :
