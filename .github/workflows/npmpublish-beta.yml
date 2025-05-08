@@ -1,7 +1,7 @@
-name: Publish to NPM
+name: Publish to NPM (Beta)
 on:
   release:
-    types: [published]
+    types: [prereleased]
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -28,7 +28,7 @@ jobs:
       - name: Set package version
         run: yarn version --new-version "${{ steps.get_version.outputs.VERSION }}" --no-git-tag-version
       - name: Publish package
-        run: yarn publish --access public
+        run: yarn publish --access public --tag beta
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Push version bump
