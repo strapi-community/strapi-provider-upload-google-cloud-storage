@@ -2,8 +2,10 @@
   <img style="width: 150px; height: auto;" src="https://www.sensinum.com/img/open-source/strapi-provider-upload-google-cloud-storage/logo.png" alt="Logo - Strapi Provider Upload - Google Cloud Storage" />
 </div>
 <div align="center">
-  <h1>Strapi Provider - Upload</h1>
-  <h2>Google Cloud Storage</h2>
+  <h1>
+    <span style="display: block">Strapi Provider - Upload</span>
+    <span style="display: block; font-size: 1.75rem">Google Cloud Storage</span>
+  </h1>
   <p><strong>Community</strong> Google Cloud Storage Provider for Strapi Upload</p>
   <a href="https://www.npmjs.org/package/@strapi-community/strapi-provider-upload-google-cloud-storage">
     <img alt="NPM version" src="https://img.shields.io/npm/v/@strapi-community/strapi-provider-upload-google-cloud-storage.svg">
