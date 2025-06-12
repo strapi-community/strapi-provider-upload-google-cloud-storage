@@ -89,14 +89,46 @@ export default {
         return !config.publicFiles;
       },
       async getSignedUrl(file: File) {
-        const options: GetSignedUrlConfig = {
-          version: 'v4',
-          action: 'read',
-          expires: getExpires(config.expires),
-        };
-        const fileName = file.url.replace(`${baseUrl}/`, '');
-        const [url] = await GCS.bucket(config.bucketName).file(fileName).getSignedUrl(options);
-        return { url };
+        // Check if we can sign URLs (requires service account with client_email)
+        if (!serviceAccount || !serviceAccount.client_email) {
+          // If using ADC or missing client_email, we cannot generate signed URLs
+          if (!config.publicFiles) {
+            throw new Error(
+              'Cannot generate signed URLs without service account credentials. ' +
+                'Either:\n' +
+                '1. Provide serviceAccount with client_email and private_key in your configuration, or\n' +
+                '2. Set publicFiles to true to use direct URLs instead of signed URLs.\n' +
+                'For more information, see: https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage#setting-up-google-authentication'
+            );
+          }
+
+          // Fallback to direct URL for public files
+          console.warn(
+            'Warning: Cannot generate signed URL without service account credentials. ' +
+              'Returning direct URL instead. This works only for public files.'
+          );
+          return { url: file.url };
+        }
+
+        try {
+          const options: GetSignedUrlConfig = {
+            version: 'v4',
+            action: 'read',
+            expires: getExpires(config.expires),
+          };
+          const fileName = file.url.replace(`${baseUrl}/`, '');
+          const [url] = await GCS.bucket(config.bucketName).file(fileName).getSignedUrl(options);
+          return { url };
+        } catch (error) {
+          if (error instanceof Error && error.message.includes('Cannot sign data without')) {
+            throw new Error(
+              `Failed to generate signed URL: ${error.message}\n` +
+                'This usually means your service account credentials are incomplete. ' +
+                'Please ensure your serviceAccount configuration includes both client_email and private_key fields.'
+            );
+          }
+          throw error;
+        }
       },
     };
   },
