@@ -1,6 +1,6 @@
 {
   "name": "@strapi-community/strapi-provider-upload-google-cloud-storage",
-  "version": "5.0.3-beta.1",
+  "version": "5.0.3",
   "description": "Community Google Cloud Storage Provider for Strapi Upload",
   "keywords": [
     "strapi",
@@ -19,7 +19,7 @@
     "url": "git+https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage.git"
   },
   "license": "MIT",
-  "author":     {
+  "author": {
     "name": "Strapi Community",
     "url": "https://github.com/strapi-community"
   },
