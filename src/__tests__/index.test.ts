@@ -513,5 +513,167 @@ describe('Provider', () => {
         expires: new Date('2020-01-01').valueOf() + 1000,
       });
     });
+
+    test('Throws error when no service account and private files', async () => {
+      mockedFileData.url = 'base/path/tmp/strapi/4l0ngH45h.jpeg';
+
+      const configWithoutServiceAccount = {
+        bucketName: 'my-bucket',
+        publicFiles: false,
+        baseUrl: 'https://storage.googleapis.com/{bucket-name}',
+        basePath: 'base/path',
+      };
+
+      const providerInstance = provider.init(configWithoutServiceAccount);
+      
+      await expect(providerInstance.getSignedUrl(mockedFileData)).rejects.toThrow(
+        'Cannot generate signed URLs without service account credentials. ' +
+        'Either:\n' +
+        '1. Provide serviceAccount with client_email and private_key in your configuration, or\n' +
+        '2. Set publicFiles to true to use direct URLs instead of signed URLs.\n' +
+        'For more information, see: https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage#setting-up-google-authentication'
+      );
+
+      expect(mockedStorage.bucket).not.toHaveBeenCalled();
+      expect(mockedBucket.file).not.toHaveBeenCalled();
+      expect(mockedFile.getSignedUrl).not.toHaveBeenCalled();
+    });
+
+    test('Returns direct URL when no service account but public files', async () => {
+      mockedFileData.url = 'https://storage.googleapis.com/my-bucket/base/path/tmp/strapi/4l0ngH45h.jpeg';
+      
+      const configWithoutServiceAccount = {
+        bucketName: 'my-bucket',
+        publicFiles: true,
+        baseUrl: 'https://storage.googleapis.com/{bucket-name}',
+        basePath: 'base/path',
+      };
+
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+      const providerInstance = provider.init(configWithoutServiceAccount);
+      const result = await providerInstance.getSignedUrl(mockedFileData);
+
+      expect(result).toEqual({
+        url: 'https://storage.googleapis.com/my-bucket/base/path/tmp/strapi/4l0ngH45h.jpeg',
+      });
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        'Warning: Cannot generate signed URL without service account credentials. ' +
+        'Returning direct URL instead. This works only for public files.'
+      );
+
+      expect(mockedStorage.bucket).not.toHaveBeenCalled();
+      expect(mockedBucket.file).not.toHaveBeenCalled();
+      expect(mockedFile.getSignedUrl).not.toHaveBeenCalled();
+
+      consoleWarnSpy.mockRestore();
+    });
+
+    test('Throws error when service account lacks client_email and private files', async () => {
+      mockedFileData.url = 'base/path/tmp/strapi/4l0ngH45h.jpeg';
+
+      const configWithIncompleteServiceAccount = {
+        bucketName: 'my-bucket',
+        publicFiles: false,
+        baseUrl: 'https://storage.googleapis.com/{bucket-name}',
+        basePath: 'base/path',
+        serviceAccount: {
+          project_id: 'test-project',
+          private_key: 'test-key',
+          client_email: '', // empty client_email
+        },
+      };
+
+      const providerInstance = provider.init(configWithIncompleteServiceAccount);
+      
+      await expect(providerInstance.getSignedUrl(mockedFileData)).rejects.toThrow(
+        'Cannot generate signed URLs without service account credentials'
+      );
+
+      expect(mockedStorage.bucket).not.toHaveBeenCalled();
+      expect(mockedBucket.file).not.toHaveBeenCalled();
+      expect(mockedFile.getSignedUrl).not.toHaveBeenCalled();
+    });
+
+    test('Returns direct URL when service account lacks client_email but public files', async () => {
+      mockedFileData.url = 'https://storage.googleapis.com/my-bucket/base/path/tmp/strapi/4l0ngH45h.jpeg';
+      
+      const configWithIncompleteServiceAccount = {
+        bucketName: 'my-bucket',
+        publicFiles: true,
+        baseUrl: 'https://storage.googleapis.com/{bucket-name}',
+        basePath: 'base/path',
+        serviceAccount: {
+          project_id: 'test-project',
+          private_key: 'test-key',
+          client_email: '', // empty client_email
+        },
+      };
+
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+      const providerInstance = provider.init(configWithIncompleteServiceAccount);
+      const result = await providerInstance.getSignedUrl(mockedFileData);
+
+      expect(result).toEqual({
+        url: 'https://storage.googleapis.com/my-bucket/base/path/tmp/strapi/4l0ngH45h.jpeg',
+      });
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        'Warning: Cannot generate signed URL without service account credentials. ' +
+        'Returning direct URL instead. This works only for public files.'
+      );
+
+      expect(mockedStorage.bucket).not.toHaveBeenCalled();
+      expect(mockedBucket.file).not.toHaveBeenCalled();
+      expect(mockedFile.getSignedUrl).not.toHaveBeenCalled();
+
+      consoleWarnSpy.mockRestore();
+    });
+
+    test('Handles signing errors with helpful message', async () => {
+      mockedFileData.url = 'base/path/tmp/strapi/4l0ngH45h.jpeg';
+      
+      const signingError = new Error('Cannot sign data without client_email');
+      mockedFile.getSignedUrl = jest.fn().mockRejectedValue(signingError);
+
+      const providerInstance = provider.init(mockedConfig);
+      
+      await expect(providerInstance.getSignedUrl(mockedFileData)).rejects.toThrow(
+        'Failed to generate signed URL: Cannot sign data without client_email\n' +
+        'This usually means your service account credentials are incomplete. ' +
+        'Please ensure your serviceAccount configuration includes both client_email and private_key fields.'
+      );
+
+      expect(mockedStorage.bucket).toHaveBeenCalledTimes(1);
+      expect(mockedBucket.file).toHaveBeenCalledTimes(1);
+      expect(mockedFile.getSignedUrl).toHaveBeenCalledTimes(1);
+
+      // Restore mock
+      mockedFile.getSignedUrl = jest
+        .fn()
+        .mockReturnValue(['https://storage.googleapis.com/my-bucket/o/people-working.png']);
+    });
+
+    test('Re-throws non-signing errors without modification', async () => {
+      mockedFileData.url = 'base/path/tmp/strapi/4l0ngH45h.jpeg';
+      
+      const genericError = new Error('Some other error');
+      mockedFile.getSignedUrl = jest.fn().mockRejectedValue(genericError);
+
+      const providerInstance = provider.init(mockedConfig);
+      
+      await expect(providerInstance.getSignedUrl(mockedFileData)).rejects.toThrow('Some other error');
+
+      expect(mockedStorage.bucket).toHaveBeenCalledTimes(1);
+      expect(mockedBucket.file).toHaveBeenCalledTimes(1);
+      expect(mockedFile.getSignedUrl).toHaveBeenCalledTimes(1);
+
+      // Restore mock
+      mockedFile.getSignedUrl = jest
+        .fn()
+        .mockReturnValue(['https://storage.googleapis.com/my-bucket/o/people-working.png']);
+    });
   });
 });
