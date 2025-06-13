@@ -1,6 +1,6 @@
 {
   "name": "@strapi-community/strapi-provider-upload-google-cloud-storage",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "Community Google Cloud Storage Provider for Strapi Upload",
   "keywords": [
     "strapi",
@@ -20,8 +20,8 @@
   },
   "license": "MIT",
   "author": {
-    "name": "Vanessa Pasque",
-    "email": "lith@amykron.com"
+    "name": "Strapi Community",
+    "url": "https://github.com/strapi-community"
   },
   "maintainers": [
     {
@@ -31,6 +31,10 @@
     {
       "name": "Mateusz Kleszcz",
       "email": "mkleszcz@virtuslab.com"
+    },
+    {
+      "name": "Mateusz Ziarko",
+      "email": "mziarko@virtuslab.com"
     }
   ],
   "main": "./dist/index.js",
