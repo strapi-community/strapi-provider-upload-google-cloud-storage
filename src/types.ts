@@ -109,15 +109,16 @@ export const optionsSchema = z.object({
   skipCheckBucket: z.boolean().or(z.stringbool()).default(false),
   gzip: z.boolean().or(z.stringbool()).or(z.literal('auto')).default('auto'),
   cacheMaxAge: z.number().default(3600),
-  expires: z.union([
-    z.string(),
-    z.date(),
-    z
-      .number()
-      .min(0)
-      .max(1000 * 60 * 60 * 24 * 7)
-      .default(15 * 60 * 1000),
-  ]),
+  expires: z
+    .union([
+      z.string(),
+      z.date(),
+      z
+        .number()
+        .min(0)
+        .max(1000 * 60 * 60 * 24 * 7),
+    ])
+    .default(15 * 60 * 1000),
   metadata: z
     .custom<MetadataFn>((val) => typeof val === 'function')
     .optional()
