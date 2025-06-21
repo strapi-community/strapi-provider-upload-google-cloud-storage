@@ -11,7 +11,7 @@ import {
 export const getConfigDefaultValues = (config: DefaultOptions) => {
   try {
     const parsedConfig = optionsSchema.parse(config);
-    
+
     // If no custom metadata function is provided, use the default one with the configured cacheMaxAge
     if (!config.metadata) {
       const defaultGetMetadata = (cacheMaxAge: number) => (file: File) => {
@@ -23,7 +23,7 @@ export const getConfigDefaultValues = (config: DefaultOptions) => {
       };
       parsedConfig.metadata = defaultGetMetadata(parsedConfig.cacheMaxAge);
     }
-    
+
     return parsedConfig;
   } catch (err) {
     if (err instanceof z.ZodError) {

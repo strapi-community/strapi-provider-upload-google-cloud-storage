@@ -73,7 +73,7 @@ describe('Utils', () => {
         bucketName: defaultOptions.bucketName,
         cacheMaxAge: 1800,
       });
-      
+
       const file = {
         name: 'test.jpg',
         mime: 'image/jpeg',
@@ -82,7 +82,7 @@ describe('Utils', () => {
         sizeInBytes: 1000,
         url: 'test.jpg',
       };
-      
+
       expect(config.metadata).toBeDefined();
       const metadata = config.metadata!(file);
       expect(metadata.cacheControl).toEqual('public, max-age=1800');

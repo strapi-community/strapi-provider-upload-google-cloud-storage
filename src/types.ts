@@ -111,9 +111,7 @@ export const optionsSchema = z.object({
         .max(1000 * 60 * 60 * 24 * 7),
     ])
     .default(15 * 60 * 1000),
-  metadata: z
-    .custom<MetadataFn>((val) => typeof val === 'function')
-    .optional(),
+  metadata: z.custom<MetadataFn>((val) => typeof val === 'function').optional(),
   getContentType: z
     .custom<GetContentTypeFn>((val) => typeof val === 'function')
     .optional()
