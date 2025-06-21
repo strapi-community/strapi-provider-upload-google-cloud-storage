@@ -10,7 +10,21 @@ import {
 
 export const getConfigDefaultValues = (config: DefaultOptions) => {
   try {
-    return optionsSchema.parse(config);
+    const parsedConfig = optionsSchema.parse(config);
+    
+    // If no custom metadata function is provided, use the default one with the configured cacheMaxAge
+    if (!config.metadata) {
+      const defaultGetMetadata = (cacheMaxAge: number) => (file: File) => {
+        const asciiFileName = file.name.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+        return {
+          contentDisposition: `inline; filename="${asciiFileName}"`,
+          cacheControl: `public, max-age=${cacheMaxAge}`,
+        };
+      };
+      parsedConfig.metadata = defaultGetMetadata(parsedConfig.cacheMaxAge);
+    }
+    
+    return parsedConfig;
   } catch (err) {
     if (err instanceof z.ZodError) {
       throw new Error(err.issues[0]?.message);
@@ -54,7 +68,7 @@ export const prepareUploadFile = async (
   const fileAttributes: FileAttributes = {
     contentType: config.getContentType(file),
     gzip: config.gzip,
-    metadata: config.metadata(file),
+    metadata: config.metadata!(file),
   };
 
   if (!config.uniform) {
