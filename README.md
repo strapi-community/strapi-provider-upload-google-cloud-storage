@@ -240,7 +240,7 @@ Boolean to define `skipCheckBucket`, when skipCheckBucket is enabled, we skip to
 
 #### `cacheMaxAge`:
 
-Number to set the cache-control header for uploaded files in seconds. This value is used by the default metadata function to set the `cacheControl` header as `public, max-age=${cacheMaxAge}`.
+Number to set the cache-control header for uploaded files in seconds. This value is used by the default metadata function to set the `Cache-Control` header as `public, max-age=${cacheMaxAge}`.
 
 - Default value : `3600` (1 hour)
 - Optional
