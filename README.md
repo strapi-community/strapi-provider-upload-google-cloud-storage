@@ -261,7 +261,7 @@ module.exports = {
 };
 ```
 
-**Note**: If you provide a custom `metadata` function, the `cacheMaxAge` option will not be used automatically. You'll need to handle caching in your custom metadata function if needed.
+**Note**: If you provide a custom `metadata` function, the `cacheMaxAge` option will be ignored. You'll need to handle caching in your custom metadata function if needed.
 
 #### `gzip`:
 
