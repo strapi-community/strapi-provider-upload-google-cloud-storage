@@ -48,6 +48,46 @@ describe('Utils', () => {
       const config = getConfigDefaultValues(options);
       expect(config).toEqual(options);
     });
+    test('Sets default cacheMaxAge to 3600 when not provided', () => {
+      const config = getConfigDefaultValues({
+        bucketName: defaultOptions.bucketName,
+      });
+      expect(config.cacheMaxAge).toEqual(3600);
+    });
+    test('Preserves custom cacheMaxAge when provided', () => {
+      const config = getConfigDefaultValues({
+        bucketName: defaultOptions.bucketName,
+        cacheMaxAge: 7200,
+      });
+      expect(config.cacheMaxAge).toEqual(7200);
+    });
+    test('Sets default cacheMaxAge when undefined is provided', () => {
+      const config = getConfigDefaultValues({
+        bucketName: defaultOptions.bucketName,
+        cacheMaxAge: undefined,
+      });
+      expect(config.cacheMaxAge).toEqual(3600);
+    });
+    test('Sets default metadata function that uses cacheMaxAge', () => {
+      const config = getConfigDefaultValues({
+        bucketName: defaultOptions.bucketName,
+        cacheMaxAge: 1800,
+      });
+
+      const file = {
+        name: 'test.jpg',
+        mime: 'image/jpeg',
+        hash: 'testhash',
+        size: 1000,
+        sizeInBytes: 1000,
+        url: 'test.jpg',
+      };
+
+      expect(config.metadata).toBeDefined();
+      const metadata = config.metadata!(file);
+      expect(metadata.cacheControl).toEqual('public, max-age=1800');
+      expect(metadata.contentDisposition).toEqual('inline; filename="test.jpg"');
+    });
     test('Throws an error if bucket name is not present', () => {
       // @ts-expect-error Test wrong configuration
       const functionWithoutBucketName = () => getConfigDefaultValues({});

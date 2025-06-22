@@ -15,6 +15,7 @@ const mockedConfig = {
   },
   bucketName: 'any',
   basePath: '/base/path',
+  cacheMaxAge: 3600,
 };
 
 const mockedFileData = {
@@ -254,6 +255,64 @@ describe('Provider', () => {
       });
     });
 
+    test('Saves file with custom cacheMaxAge', async () => {
+      const config = {
+        ...mockedConfig,
+        cacheMaxAge: 7200, // 2 hours
+      };
+      const providerInstance = provider.init(config);
+      await providerInstance.upload(mockedFileData);
+
+      expect(mockedStorage.bucket).toHaveBeenCalledTimes(1);
+      expect(mockedStorage.bucket).toHaveBeenCalledWith(mockedConfig.bucketName);
+      expect(mockedBucket.exists).toHaveBeenCalledTimes(1);
+      expect(mockedBucket.file).toHaveBeenCalledTimes(1);
+      expect(mockedBucket.file).toHaveBeenCalledWith('base/path/tmp/strapi/4l0ngH45h.jpeg');
+      expect(mockedFile.exists).toHaveBeenCalledTimes(1);
+      expect(mockedFile.save).toHaveBeenCalledTimes(1);
+      expect(mockedFile.save).toHaveBeenCalledWith(mockedFileData.buffer, {
+        contentType: 'image/jpeg',
+        gzip: 'auto',
+        metadata: {
+          cacheControl: 'public, max-age=7200',
+          contentDisposition: 'inline; filename="people coding.JPEG"',
+        },
+        public: true,
+      });
+    });
+
+    test('Saves file with default cacheMaxAge when not specified', async () => {
+      const config = {
+        serviceAccount: {
+          project_id: '123',
+          client_email: 'my@email.org',
+          private_key: 'a random key',
+        },
+        bucketName: 'any',
+        basePath: '/base/path',
+        // No cacheMaxAge specified - should use default value
+      };
+      const providerInstance = provider.init(config);
+      await providerInstance.upload(mockedFileData);
+
+      expect(mockedStorage.bucket).toHaveBeenCalledTimes(1);
+      expect(mockedStorage.bucket).toHaveBeenCalledWith(mockedConfig.bucketName);
+      expect(mockedBucket.exists).toHaveBeenCalledTimes(1);
+      expect(mockedBucket.file).toHaveBeenCalledTimes(1);
+      expect(mockedBucket.file).toHaveBeenCalledWith('base/path/tmp/strapi/4l0ngH45h.jpeg');
+      expect(mockedFile.exists).toHaveBeenCalledTimes(1);
+      expect(mockedFile.save).toHaveBeenCalledTimes(1);
+      expect(mockedFile.save).toHaveBeenCalledWith(mockedFileData.buffer, {
+        contentType: 'image/jpeg',
+        gzip: 'auto',
+        metadata: {
+          cacheControl: 'public, max-age=3600', // Default value
+          contentDisposition: 'inline; filename="people coding.JPEG"',
+        },
+        public: true,
+      });
+    });
+
     test('Deletes file and save a new one if file exists in bucket', async () => {
       mockedFile.exists = jest.fn(() => [true]);
 
@@ -356,6 +415,34 @@ describe('Provider', () => {
       expect(pipeline).toHaveBeenCalledWith(mockedFileStreamData.stream, 'STREAM');
 
       mockedFile.exists = jest.fn(() => [false]);
+    });
+
+    test('Saves file stream with custom cacheMaxAge', async () => {
+      const config = {
+        ...mockedConfig,
+        cacheMaxAge: 7200, // 2 hours
+      };
+      const providerInstance = provider.init(config);
+      await providerInstance.uploadStream(mockedFileStreamData);
+
+      expect(mockedStorage.bucket).toHaveBeenCalledTimes(1);
+      expect(mockedStorage.bucket).toHaveBeenCalledWith(mockedConfig.bucketName);
+      expect(mockedBucket.exists).toHaveBeenCalledTimes(1);
+      expect(mockedBucket.file).toHaveBeenCalledTimes(1);
+      expect(mockedBucket.file).toHaveBeenCalledWith('base/path/tmp/strapi/4l0ngH45h.jpeg');
+      expect(mockedFile.exists).toHaveBeenCalledTimes(1);
+      expect(mockedFile.createWriteStream).toHaveBeenCalledTimes(1);
+      expect(mockedFile.createWriteStream).toHaveBeenCalledWith({
+        contentType: 'image/jpeg',
+        gzip: 'auto',
+        metadata: {
+          cacheControl: 'public, max-age=7200',
+          contentDisposition: 'inline; filename="people coding.JPEG"',
+        },
+        public: true,
+      });
+      expect(pipeline).toHaveBeenCalledTimes(1);
+      expect(pipeline).toHaveBeenCalledWith(mockedFileStreamData.stream, 'STREAM');
     });
 
     test('Throws error if bucket does not exist', async () => {

@@ -240,9 +240,28 @@ Boolean to define `skipCheckBucket`, when skipCheckBucket is enabled, we skip to
 
 #### `cacheMaxAge`:
 
-Number to set the cache-control header for uploaded files.
-- Default value : `3600`
+Number to set the cache-control header for uploaded files in seconds. This value is used by the default metadata function to set the `Cache-Control` header as `public, max-age=${cacheMaxAge}`.
+
+- Default value : `3600` (1 hour)
 - Optional
+
+Example:
+
+```js
+module.exports = {
+  upload: {
+    config: {
+      provider: '@strapi-community/strapi-provider-upload-google-cloud-storage',
+      providerOptions: {
+        bucketName: 'my-bucket',
+        cacheMaxAge: 604800, // 7 days in seconds
+      },
+    },
+  },
+};
+```
+
+**Note**: If you provide a custom `metadata` function, the `cacheMaxAge` option will be ignored. You'll need to handle caching in your custom metadata function if needed.
 
 #### `gzip`:
 
@@ -264,12 +283,12 @@ Value to define expiration time for signed URLS. Files are signed when `publicFi
 
 Function that is executed to compute the metadata for a file when it is uploaded. 
 
-When no function is provided, the following metadata is used:
+When no function is provided, the following metadata is used (using the configured `cacheMaxAge` value):
 
 ```ts
 {
   contentDisposition: `inline; filename="${file.name}"`,
-  cacheControl: `public, max-age=3600`,
+  cacheControl: `public, max-age=${cacheMaxAge}`, // Uses the cacheMaxAge from your configuration
 }
 ```
 

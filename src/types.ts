@@ -64,14 +64,6 @@ type MetadataFn = (file: File) => FileMetadata;
 type GetContentTypeFn = (file: File) => string;
 type GenerateUploadFileNameFn = (basePath: string, file: File) => Promise<string> | string;
 
-const defaultGetMetadata = (file: File) => {
-  const asciiFileName = file.name.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
-  return {
-    contentDisposition: `inline; filename="${asciiFileName}"`,
-    cacheControl: 'public, max-age=3600',
-  };
-};
-
 const defaultGetContentType = (file: File) => file.mime;
 
 const defaultGenerateUploadFileName = (basePath: string, file: File) => {
@@ -119,10 +111,7 @@ export const optionsSchema = z.object({
         .max(1000 * 60 * 60 * 24 * 7),
     ])
     .default(15 * 60 * 1000),
-  metadata: z
-    .custom<MetadataFn>((val) => typeof val === 'function')
-    .optional()
-    .default(() => defaultGetMetadata),
+  metadata: z.custom<MetadataFn>((val) => typeof val === 'function').optional(),
   getContentType: z
     .custom<GetContentTypeFn>((val) => typeof val === 'function')
     .optional()
