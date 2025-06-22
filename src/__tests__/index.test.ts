@@ -74,6 +74,8 @@ jest.mock('node:stream/promises', () => ({
 describe('Provider', () => {
   beforeEach(() => {
     mockedFileData.url = '/';
+    mockedFileData.mime = 'image/jpeg';
+    mockedFileStreamData.mime = 'image/jpeg';
     jest.clearAllMocks();
   });
 
@@ -136,6 +138,8 @@ describe('Provider', () => {
         },
         public: true,
       });
+      // Verify that file.mime is updated to the content type used (should be same as original)
+      expect(mockedFileData.mime).toEqual('image/jpeg');
     });
 
     test('Saves file with custom metadata', async () => {
@@ -253,6 +257,7 @@ describe('Provider', () => {
         },
         public: true,
       });
+      expect(mockedFileData.mime).toEqual('application/x-test');
     });
 
     test('Saves file with custom cacheMaxAge', async () => {
@@ -443,6 +448,36 @@ describe('Provider', () => {
       });
       expect(pipeline).toHaveBeenCalledTimes(1);
       expect(pipeline).toHaveBeenCalledWith(mockedFileStreamData.stream, 'STREAM');
+    });
+
+    test('Saves file stream with custom content type and updates file.mime', async () => {
+      const config = {
+        ...mockedConfig,
+        getContentType: () => 'application/x-stream-test',
+      };
+      const providerInstance = provider.init(config);
+      await providerInstance.uploadStream(mockedFileStreamData);
+
+      expect(mockedStorage.bucket).toHaveBeenCalledTimes(1);
+      expect(mockedStorage.bucket).toHaveBeenCalledWith(mockedConfig.bucketName);
+      expect(mockedBucket.exists).toHaveBeenCalledTimes(1);
+      expect(mockedBucket.file).toHaveBeenCalledTimes(1);
+      expect(mockedBucket.file).toHaveBeenCalledWith('base/path/tmp/strapi/4l0ngH45h.jpeg');
+      expect(mockedFile.exists).toHaveBeenCalledTimes(1);
+      expect(mockedFile.createWriteStream).toHaveBeenCalledTimes(1);
+      expect(mockedFile.createWriteStream).toHaveBeenCalledWith({
+        contentType: 'application/x-stream-test',
+        gzip: 'auto',
+        metadata: {
+          cacheControl: 'public, max-age=3600',
+          contentDisposition: 'inline; filename="people coding.JPEG"',
+        },
+        public: true,
+      });
+      expect(pipeline).toHaveBeenCalledTimes(1);
+      expect(pipeline).toHaveBeenCalledWith(mockedFileStreamData.stream, 'STREAM');
+      // Verify that file.mime is updated to match the custom content type
+      expect(mockedFileStreamData.mime).toEqual('application/x-stream-test');
     });
 
     test('Throws error if bucket does not exist', async () => {

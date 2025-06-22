@@ -38,6 +38,7 @@ export default {
           if (file.buffer) {
             await bucketFile.save(file.buffer, fileAttributes);
             file.url = `${baseUrl}/${fullFileName}`;
+            file.mime = fileAttributes.contentType;
           }
         } catch (error) {
           if (error instanceof Error && 'message' in error) {
@@ -61,6 +62,7 @@ export default {
           if (file.stream) {
             await pipeline(file.stream, bucketFile.createWriteStream(fileAttributes));
             file.url = `${baseUrl}/${fullFileName}`;
+            file.mime = fileAttributes.contentType;
           }
         } catch (error) {
           if (error instanceof Error && 'message' in error) {
