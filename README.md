@@ -336,14 +336,24 @@ When no function is provided, the following content type is used:
 file.mime
 ```
 
+**Important**: When a custom `getContentType` function is provided, the file's MIME type will be updated both in Google Cloud Storage metadata and in the Strapi database to ensure consistency.
+
 - Default value: `undefined`
 - Optional
 
 Example:
 
 ```ts
-  getContentType: (file: File) => file.mime;
+  getContentType: (file: File) => {
+    // Custom logic to determine content type
+    if (file.ext === '.csv') {
+      return 'text/csv';
+    }
+    return file.mime; // Fallback to original MIME type
+  },
 ```
+
+**Note**: This function affects both the `contentType` set in Google Cloud Storage and the `mime` field stored in the Strapi database.
 
 ## ❓ FAQ
 
