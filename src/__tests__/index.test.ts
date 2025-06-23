@@ -651,7 +651,7 @@ describe('Provider', () => {
       mockedFile.getSignedUrl = jest.fn().mockRejectedValue(signingError);
 
       const providerInstance = provider.init(configWithoutServiceAccount);
-      
+
       // Mock detectGCPEnvironment to return false (non-GCP environment)
       providerInstance.detectGCPEnvironment = jest.fn().mockReturnValue(false);
 
@@ -691,10 +691,10 @@ describe('Provider', () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
       const providerInstance = provider.init(configWithoutServiceAccount);
-      
+
       // Mock detectGCPEnvironment to return false (non-GCP environment)
       providerInstance.detectGCPEnvironment = jest.fn().mockReturnValue(false);
-      
+
       const result = await providerInstance.getSignedUrl(mockedFileData);
 
       expect(result).toEqual({
@@ -711,7 +711,7 @@ describe('Provider', () => {
       expect(mockedFile.getSignedUrl).toHaveBeenCalled();
 
       consoleWarnSpy.mockRestore();
-      
+
       // Restore mock
       mockedFile.getSignedUrl = jest
         .fn()
@@ -738,7 +738,7 @@ describe('Provider', () => {
       mockedFile.getSignedUrl = jest.fn().mockRejectedValue(signingError);
 
       const providerInstance = provider.init(configWithIncompleteServiceAccount);
-      
+
       // Mock detectGCPEnvironment to return false (non-GCP environment)
       providerInstance.detectGCPEnvironment = jest.fn().mockReturnValue(false);
 
@@ -779,10 +779,10 @@ describe('Provider', () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
       const providerInstance = provider.init(configWithIncompleteServiceAccount);
-      
+
       // Mock detectGCPEnvironment to return false (non-GCP environment)
       providerInstance.detectGCPEnvironment = jest.fn().mockReturnValue(false);
-      
+
       const result = await providerInstance.getSignedUrl(mockedFileData);
 
       expect(result).toEqual({
@@ -799,7 +799,7 @@ describe('Provider', () => {
       expect(mockedFile.getSignedUrl).toHaveBeenCalled();
 
       consoleWarnSpy.mockRestore();
-      
+
       // Restore mock
       mockedFile.getSignedUrl = jest
         .fn()
@@ -817,7 +817,7 @@ describe('Provider', () => {
       };
 
       const providerInstance = provider.init(configWithoutServiceAccount);
-      
+
       // Mock detectGCPEnvironment to return true (GCP environment)
       providerInstance.detectGCPEnvironment = jest.fn().mockReturnValue(true);
 
@@ -847,7 +847,7 @@ describe('Provider', () => {
       mockedFile.getSignedUrl = jest.fn().mockRejectedValue(signingError);
 
       const providerInstance = provider.init(configWithoutServiceAccount);
-      
+
       // Mock detectGCPEnvironment to return true (GCP environment)
       providerInstance.detectGCPEnvironment = jest.fn().mockReturnValue(true);
 
@@ -873,7 +873,7 @@ describe('Provider', () => {
       // Test with GCP environment variables
       const originalEnv = process.env;
       process.env = { ...originalEnv, GOOGLE_CLOUD_PROJECT: 'test-project' };
-      
+
       expect(providerInstance.detectGCPEnvironment()).toBe(true);
 
       process.env = { ...originalEnv, GAE_APPLICATION: 'test-app' };
@@ -893,7 +893,7 @@ describe('Provider', () => {
       delete process.env.FUNCTION_NAME;
       delete process.env.GCE_METADATA_HOST;
       delete process.env.KUBERNETES_SERVICE_HOST;
-      
+
       expect(providerInstance.detectGCPEnvironment()).toBe(false);
 
       // Restore environment
@@ -907,7 +907,7 @@ describe('Provider', () => {
       mockedFile.getSignedUrl = jest.fn().mockRejectedValue(signingError);
 
       const providerInstance = provider.init(mockedConfig);
-      
+
       // Mock detectGCPEnvironment to return false (non-GCP environment with explicit service account)
       providerInstance.detectGCPEnvironment = jest.fn().mockReturnValue(false);
 
