@@ -197,9 +197,44 @@ module.exports = [
 
 #### `serviceAccount` :
 
-JSON data provide by Google Account (explained before). If you are deploying to a GCP product that supports Application Default credentials, you can leave this omitted, and authentication will work automatically.
+JSON data provide by Google Account (explained before). 
+
+**For GCP environments (App Engine, Cloud Run, Cloud Functions, GKE, Compute Engine):**
+You can leave this omitted, and authentication will work automatically using Application Default Credentials (ADC). The provider will detect the GCP environment and attempt to use ADC for signing URLs.
+
+**For non-GCP environments (local development, on-premises, other cloud providers):**
+You must provide explicit service account credentials with both `client_email` and `private_key` fields for signed URL generation when `publicFiles` is set to `false`.
+
+**Behavior:**
+- **GCP environment + no serviceAccount**: Uses ADC for signed URLs ✅
+- **GCP environment + explicit serviceAccount**: Uses provided credentials ✅  
+- **Non-GCP environment + no serviceAccount + publicFiles: true**: Returns direct URLs with warning ⚠️
+- **Non-GCP environment + no serviceAccount + publicFiles: false**: Throws error ❌
+- **Non-GCP environment + explicit serviceAccount**: Uses provided credentials ✅
 
 Can be set as a String, JSON Object, or omitted.
+
+**Example for GCP environments (minimal setup):**
+```js
+// No serviceAccount needed - uses ADC automatically
+{
+  bucketName: 'my-bucket',
+  publicFiles: false, // Signed URLs will work with ADC
+}
+```
+
+**Example for non-GCP environments:**
+```js
+{
+  bucketName: 'my-bucket',
+  publicFiles: false,
+  serviceAccount: {
+    project_id: 'your-project',
+    client_email: 'your-service-account@your-project.iam.gserviceaccount.com',
+    private_key: '-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n'
+  }
+}
+```
 
 #### `bucketName` :
 
@@ -375,6 +410,31 @@ Follow this step :
 - Open your `ServiceAccount` json file
 - Copy the full content of the file
 - Paste it under the variable `ServiceAccount` in `plugins.js` config file in JSON
+
+#### Signed URL Generation Issues
+
+**Error: `Cannot generate signed URLs without service account credentials`**
+
+This error occurs when:
+1. You're running in a **non-GCP environment** (local development, other cloud providers)
+2. You have `publicFiles: false` (requiring signed URLs)
+3. You haven't provided explicit `serviceAccount` credentials
+
+**Solutions:**
+- For **GCP environments**: Ensure your service account has proper permissions (`Storage Object Admin` or `Storage Admin` role)
+- For **non-GCP environments**: Provide explicit `serviceAccount` configuration with `client_email` and `private_key`
+- Alternatively: Set `publicFiles: true` to use direct URLs instead of signed URLs
+
+**Error: `Failed to generate signed URL in GCP environment`**
+
+This error occurs in GCP environments when Application Default Credentials (ADC) cannot sign URLs, typically due to:
+1. Insufficient permissions on the default service account
+2. Missing IAM roles for URL signing
+
+**Solutions:**
+- Ensure your GCP service account has `Storage Object Admin` or `Storage Admin` role
+- Verify that the default service account has signing permissions
+- Consider providing explicit `serviceAccount` credentials if ADC continues to fail
 
 ## 🔗 Links
 

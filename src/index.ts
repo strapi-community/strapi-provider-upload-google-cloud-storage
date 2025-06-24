@@ -91,28 +91,8 @@ export default {
         return !config.publicFiles;
       },
       async getSignedUrl(file: File) {
-        // Check if we can sign URLs (requires service account with client_email)
-        if (!serviceAccount || !serviceAccount.client_email) {
-          // If using ADC or missing client_email, we cannot generate signed URLs
-          if (!config.publicFiles) {
-            throw new Error(
-              'Cannot generate signed URLs without service account credentials. ' +
-                'Either:\n' +
-                '1. Provide serviceAccount with client_email and private_key in your configuration, or\n' +
-                '2. Set publicFiles to true to use direct URLs instead of signed URLs.\n' +
-                'For more information, see: https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage#setting-up-google-authentication'
-            );
-          }
-
-          // Fallback to direct URL for public files
-          console.warn(
-            'Warning: Cannot generate signed URL without service account credentials. ' +
-              'Returning direct URL instead. This works only for public files.'
-          );
-          return { url: file.url };
-        }
-
         try {
+          // First, try to generate signed URL - this works with ADC in GCP environments
           const options: GetSignedUrlConfig = {
             version: 'v4',
             action: 'read',
@@ -122,15 +102,73 @@ export default {
           const [url] = await GCS.bucket(config.bucketName).file(fileName).getSignedUrl(options);
           return { url };
         } catch (error) {
+          // If signing fails, check if this is a credentials issue
           if (error instanceof Error && error.message.includes('Cannot sign data without')) {
+            // Check if we're in a GCP environment where ADC should work
+            const isGCPEnvironment = this.detectGCPEnvironment();
+
+            if (!isGCPEnvironment && (!serviceAccount || !serviceAccount.client_email)) {
+              // Non-GCP environment requires explicit service account credentials
+              if (!config.publicFiles) {
+                throw new Error(
+                  'Cannot generate signed URLs without service account credentials. ' +
+                    'Either:\n' +
+                    '1. Provide serviceAccount with client_email and private_key in your configuration, or\n' +
+                    '2. Set publicFiles to true to use direct URLs instead of signed URLs.\n' +
+                    'For more information, see: https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage#setting-up-google-authentication'
+                );
+              }
+
+              // Fallback to direct URL for public files in non-GCP environments
+              console.warn(
+                'Warning: Cannot generate signed URL without service account credentials. ' +
+                  'Returning direct URL instead. This works only for public files.'
+              );
+              return { url: file.url };
+            }
+
+            // For GCP environments, provide more specific error message
+            if (isGCPEnvironment) {
+              throw new Error(
+                `Failed to generate signed URL in GCP environment: ${error.message}\n` +
+                  'This may indicate that your GCP service account lacks the necessary permissions for URL signing. ' +
+                  'Please ensure your service account has the "Storage Object Admin" or "Storage Admin" role.'
+              );
+            }
+
+            // Fallback error for other cases
             throw new Error(
               `Failed to generate signed URL: ${error.message}\n` +
                 'This usually means your service account credentials are incomplete. ' +
                 'Please ensure your serviceAccount configuration includes both client_email and private_key fields.'
             );
           }
+
+          // Re-throw other errors as-is
           throw error;
         }
+      },
+
+      detectGCPEnvironment() {
+        // Check common GCP environment variables
+        const gcpEnvVars = [
+          'GOOGLE_CLOUD_PROJECT',
+          'GCLOUD_PROJECT',
+          'GAE_APPLICATION', // App Engine
+          'GAE_SERVICE', // App Engine
+          'K_SERVICE', // Cloud Run
+          'FUNCTION_NAME', // Cloud Functions
+          'FUNCTION_TARGET', // Cloud Functions
+        ];
+
+        // Check if we're running in a GCP environment
+        const hasGCPEnvVar = gcpEnvVars.some((envVar) => process.env[envVar]);
+
+        // Additional check for Google metadata server (available in GCP environments)
+        const hasGoogleMetadata =
+          process.env.GCE_METADATA_HOST || process.env.KUBERNETES_SERVICE_HOST; // GKE
+
+        return hasGCPEnvVar || !!hasGoogleMetadata;
       },
     };
   },

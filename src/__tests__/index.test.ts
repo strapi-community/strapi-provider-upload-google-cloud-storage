@@ -646,7 +646,14 @@ describe('Provider', () => {
         basePath: 'base/path',
       };
 
+      // Mock a signing error to simulate ADC not working in non-GCP environment
+      const signingError = new Error('Cannot sign data without client_email');
+      mockedFile.getSignedUrl = jest.fn().mockRejectedValue(signingError);
+
       const providerInstance = provider.init(configWithoutServiceAccount);
+
+      // Mock detectGCPEnvironment to return false (non-GCP environment)
+      providerInstance.detectGCPEnvironment = jest.fn().mockReturnValue(false);
 
       await expect(providerInstance.getSignedUrl(mockedFileData)).rejects.toThrow(
         'Cannot generate signed URLs without service account credentials. ' +
@@ -656,9 +663,14 @@ describe('Provider', () => {
           'For more information, see: https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage#setting-up-google-authentication'
       );
 
-      expect(mockedStorage.bucket).not.toHaveBeenCalled();
-      expect(mockedBucket.file).not.toHaveBeenCalled();
-      expect(mockedFile.getSignedUrl).not.toHaveBeenCalled();
+      expect(mockedStorage.bucket).toHaveBeenCalled();
+      expect(mockedBucket.file).toHaveBeenCalled();
+      expect(mockedFile.getSignedUrl).toHaveBeenCalled();
+
+      // Restore mock
+      mockedFile.getSignedUrl = jest
+        .fn()
+        .mockReturnValue(['https://storage.googleapis.com/my-bucket/o/people-working.png']);
     });
 
     test('Returns direct URL when no service account but public files', async () => {
@@ -672,9 +684,17 @@ describe('Provider', () => {
         basePath: 'base/path',
       };
 
+      // Mock a signing error to simulate ADC not working in non-GCP environment
+      const signingError = new Error('Cannot sign data without client_email');
+      mockedFile.getSignedUrl = jest.fn().mockRejectedValue(signingError);
+
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
       const providerInstance = provider.init(configWithoutServiceAccount);
+
+      // Mock detectGCPEnvironment to return false (non-GCP environment)
+      providerInstance.detectGCPEnvironment = jest.fn().mockReturnValue(false);
+
       const result = await providerInstance.getSignedUrl(mockedFileData);
 
       expect(result).toEqual({
@@ -686,11 +706,16 @@ describe('Provider', () => {
           'Returning direct URL instead. This works only for public files.'
       );
 
-      expect(mockedStorage.bucket).not.toHaveBeenCalled();
-      expect(mockedBucket.file).not.toHaveBeenCalled();
-      expect(mockedFile.getSignedUrl).not.toHaveBeenCalled();
+      expect(mockedStorage.bucket).toHaveBeenCalled();
+      expect(mockedBucket.file).toHaveBeenCalled();
+      expect(mockedFile.getSignedUrl).toHaveBeenCalled();
 
       consoleWarnSpy.mockRestore();
+
+      // Restore mock
+      mockedFile.getSignedUrl = jest
+        .fn()
+        .mockReturnValue(['https://storage.googleapis.com/my-bucket/o/people-working.png']);
     });
 
     test('Throws error when service account lacks client_email and private files', async () => {
@@ -708,15 +733,27 @@ describe('Provider', () => {
         },
       };
 
+      // Mock a signing error to simulate incomplete credentials
+      const signingError = new Error('Cannot sign data without client_email');
+      mockedFile.getSignedUrl = jest.fn().mockRejectedValue(signingError);
+
       const providerInstance = provider.init(configWithIncompleteServiceAccount);
+
+      // Mock detectGCPEnvironment to return false (non-GCP environment)
+      providerInstance.detectGCPEnvironment = jest.fn().mockReturnValue(false);
 
       await expect(providerInstance.getSignedUrl(mockedFileData)).rejects.toThrow(
         'Cannot generate signed URLs without service account credentials'
       );
 
-      expect(mockedStorage.bucket).not.toHaveBeenCalled();
-      expect(mockedBucket.file).not.toHaveBeenCalled();
-      expect(mockedFile.getSignedUrl).not.toHaveBeenCalled();
+      expect(mockedStorage.bucket).toHaveBeenCalled();
+      expect(mockedBucket.file).toHaveBeenCalled();
+      expect(mockedFile.getSignedUrl).toHaveBeenCalled();
+
+      // Restore mock
+      mockedFile.getSignedUrl = jest
+        .fn()
+        .mockReturnValue(['https://storage.googleapis.com/my-bucket/o/people-working.png']);
     });
 
     test('Returns direct URL when service account lacks client_email but public files', async () => {
@@ -735,9 +772,17 @@ describe('Provider', () => {
         },
       };
 
+      // Mock a signing error to simulate incomplete credentials
+      const signingError = new Error('Cannot sign data without client_email');
+      mockedFile.getSignedUrl = jest.fn().mockRejectedValue(signingError);
+
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
       const providerInstance = provider.init(configWithIncompleteServiceAccount);
+
+      // Mock detectGCPEnvironment to return false (non-GCP environment)
+      providerInstance.detectGCPEnvironment = jest.fn().mockReturnValue(false);
+
       const result = await providerInstance.getSignedUrl(mockedFileData);
 
       expect(result).toEqual({
@@ -749,11 +794,110 @@ describe('Provider', () => {
           'Returning direct URL instead. This works only for public files.'
       );
 
-      expect(mockedStorage.bucket).not.toHaveBeenCalled();
-      expect(mockedBucket.file).not.toHaveBeenCalled();
-      expect(mockedFile.getSignedUrl).not.toHaveBeenCalled();
+      expect(mockedStorage.bucket).toHaveBeenCalled();
+      expect(mockedBucket.file).toHaveBeenCalled();
+      expect(mockedFile.getSignedUrl).toHaveBeenCalled();
 
       consoleWarnSpy.mockRestore();
+
+      // Restore mock
+      mockedFile.getSignedUrl = jest
+        .fn()
+        .mockReturnValue(['https://storage.googleapis.com/my-bucket/o/people-working.png']);
+    });
+
+    test('Works with ADC in GCP environment without explicit service account', async () => {
+      mockedFileData.url = 'base/path/tmp/strapi/4l0ngH45h.jpeg';
+
+      const configWithoutServiceAccount = {
+        bucketName: 'my-bucket',
+        publicFiles: false,
+        baseUrl: 'https://storage.googleapis.com/{bucket-name}',
+        basePath: 'base/path',
+      };
+
+      const providerInstance = provider.init(configWithoutServiceAccount);
+
+      // Mock detectGCPEnvironment to return true (GCP environment)
+      providerInstance.detectGCPEnvironment = jest.fn().mockReturnValue(true);
+
+      const result = await providerInstance.getSignedUrl(mockedFileData);
+
+      expect(result).toEqual({
+        url: 'https://storage.googleapis.com/my-bucket/o/people-working.png',
+      });
+
+      expect(mockedStorage.bucket).toHaveBeenCalled();
+      expect(mockedBucket.file).toHaveBeenCalled();
+      expect(mockedFile.getSignedUrl).toHaveBeenCalled();
+    });
+
+    test('Throws specific error for GCP environment when ADC fails', async () => {
+      mockedFileData.url = 'base/path/tmp/strapi/4l0ngH45h.jpeg';
+
+      const configWithoutServiceAccount = {
+        bucketName: 'my-bucket',
+        publicFiles: false,
+        baseUrl: 'https://storage.googleapis.com/{bucket-name}',
+        basePath: 'base/path',
+      };
+
+      // Mock a signing error to simulate ADC failure in GCP environment
+      const signingError = new Error('Cannot sign data without client_email');
+      mockedFile.getSignedUrl = jest.fn().mockRejectedValue(signingError);
+
+      const providerInstance = provider.init(configWithoutServiceAccount);
+
+      // Mock detectGCPEnvironment to return true (GCP environment)
+      providerInstance.detectGCPEnvironment = jest.fn().mockReturnValue(true);
+
+      await expect(providerInstance.getSignedUrl(mockedFileData)).rejects.toThrow(
+        'Failed to generate signed URL in GCP environment: Cannot sign data without client_email\n' +
+          'This may indicate that your GCP service account lacks the necessary permissions for URL signing. ' +
+          'Please ensure your service account has the "Storage Object Admin" or "Storage Admin" role.'
+      );
+
+      expect(mockedStorage.bucket).toHaveBeenCalled();
+      expect(mockedBucket.file).toHaveBeenCalled();
+      expect(mockedFile.getSignedUrl).toHaveBeenCalled();
+
+      // Restore mock
+      mockedFile.getSignedUrl = jest
+        .fn()
+        .mockReturnValue(['https://storage.googleapis.com/my-bucket/o/people-working.png']);
+    });
+
+    test('Detects GCP environment correctly', () => {
+      const providerInstance = provider.init(mockedConfig);
+
+      // Test with GCP environment variables
+      const originalEnv = process.env;
+      process.env = { ...originalEnv, GOOGLE_CLOUD_PROJECT: 'test-project' };
+
+      expect(providerInstance.detectGCPEnvironment()).toBe(true);
+
+      process.env = { ...originalEnv, GAE_APPLICATION: 'test-app' };
+      expect(providerInstance.detectGCPEnvironment()).toBe(true);
+
+      process.env = { ...originalEnv, K_SERVICE: 'test-service' };
+      expect(providerInstance.detectGCPEnvironment()).toBe(true);
+
+      process.env = { ...originalEnv, FUNCTION_NAME: 'test-function' };
+      expect(providerInstance.detectGCPEnvironment()).toBe(true);
+
+      // Test without GCP environment variables
+      process.env = { ...originalEnv };
+      delete process.env.GOOGLE_CLOUD_PROJECT;
+      delete process.env.GAE_APPLICATION;
+      delete process.env.K_SERVICE;
+      delete process.env.FUNCTION_NAME;
+      delete process.env.GCE_METADATA_HOST;
+      delete process.env.KUBERNETES_SERVICE_HOST;
+
+      expect(providerInstance.detectGCPEnvironment()).toBe(false);
+
+      // Restore environment
+      process.env = originalEnv;
     });
 
     test('Handles signing errors with helpful message', async () => {
@@ -763,6 +907,9 @@ describe('Provider', () => {
       mockedFile.getSignedUrl = jest.fn().mockRejectedValue(signingError);
 
       const providerInstance = provider.init(mockedConfig);
+
+      // Mock detectGCPEnvironment to return false (non-GCP environment with explicit service account)
+      providerInstance.detectGCPEnvironment = jest.fn().mockReturnValue(false);
 
       await expect(providerInstance.getSignedUrl(mockedFileData)).rejects.toThrow(
         'Failed to generate signed URL: Cannot sign data without client_email\n' +
