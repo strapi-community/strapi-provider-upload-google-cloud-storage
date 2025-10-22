@@ -1,6 +1,7 @@
 import type { GetSignedUrlConfig } from '@google-cloud/storage';
 import { Storage } from '@google-cloud/storage';
 import { pipeline } from 'node:stream/promises';
+import path from 'node:path';
 import type { DefaultOptions, File } from './types';
 import { getConfigDefaultValues, getExpires, prepareUploadFile } from './utils';
 
@@ -76,7 +77,24 @@ export default {
           return;
         }
 
-        const fileName = file.url.replace(`${baseUrl}/`, '');
+        // Extract filename from file.url when file.path is missing
+        const fileName = file.path
+          ? `${basePath}${file.path.slice(1)}/${file.hash}${file.ext?.toLowerCase() || ''}`
+          : (() => {
+              if (!file.url) return '';
+              // Remove query parameters and fragments from URL
+              const cleanUrl = file.url.split('?')[0].split('#')[0];
+              // Extract path after baseUrl
+              if (cleanUrl.startsWith(`${baseUrl}/`)) {
+                return cleanUrl.substring(`${baseUrl}/`.length);
+              }
+              // Handle direct paths
+              if (cleanUrl.startsWith(basePath)) {
+                return cleanUrl.substring(basePath.length).replace(/^\/+/, '');
+              }
+              // Fallback to hash-based reconstruction
+              return `${file.hash}/${file.hash}${file.ext?.toLowerCase() || ''}`;
+            })();
         const bucket = GCS.bucket(config.bucketName);
         try {
           await bucket.file(fileName).delete();
@@ -98,7 +116,24 @@ export default {
             action: 'read',
             expires: getExpires(config.expires),
           };
-          const fileName = file.url.replace(`${baseUrl}/`, '');
+          // Extract filename from file.url when file.path is missing
+          const fileName = file.path
+            ? `${basePath}${file.path.slice(1)}/${file.hash}${file.ext?.toLowerCase() || ''}`
+            : (() => {
+                if (!file.url) return '';
+                // Remove query parameters and fragments from URL
+                const cleanUrl = file.url.split('?')[0].split('#')[0];
+                // Extract path after baseUrl
+                if (cleanUrl.startsWith(`${baseUrl}/`)) {
+                  return cleanUrl.substring(`${baseUrl}/`.length);
+                }
+                // Handle direct paths
+                if (cleanUrl.startsWith(basePath)) {
+                  return cleanUrl.substring(basePath.length).replace(/^\/+/, '');
+                }
+                // Fallback to hash-based reconstruction
+                return `${file.hash}/${file.hash}${file.ext?.toLowerCase() || ''}`;
+              })();
           const [url] = await GCS.bucket(config.bucketName).file(fileName).getSignedUrl(options);
           return { url };
         } catch (error) {

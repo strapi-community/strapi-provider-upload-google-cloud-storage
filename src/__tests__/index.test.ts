@@ -948,5 +948,112 @@ describe('Provider', () => {
         .fn()
         .mockReturnValue(['https://storage.googleapis.com/my-bucket/o/people-working.png']);
     });
+
+    test('Uses file.path instead of file.url to prevent double signing', async () => {
+      jest.useFakeTimers().setSystemTime(new Date('2020-01-01'));
+
+      // Simulate a file with both path and url (where url might be signed)
+      const fileWithPath = {
+        ...mockedFileData,
+        path: '/tmp/strapi',
+        url: 'https://storage.googleapis.com/my-bucket/base/path/tmp/strapi/4l0ngH45h.jpeg?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=...', // signed URL
+      };
+
+      const providerInstance = provider.init(mockedConfig);
+      await providerInstance.getSignedUrl(fileWithPath);
+
+      // Should use the reconstructed path from file.path, not the signed URL
+      expect(mockedBucket.file).toHaveBeenCalledWith('base/path/tmp/strapi/4l0ngH45h.jpeg');
+      expect(mockedFile.getSignedUrl).toHaveBeenCalledWith({
+        version: 'v4',
+        action: 'read',
+        expires: new Date('2020-01-01').valueOf() + 15 * 60 * 1000,
+      });
+    });
+
+    test('Falls back to file.url when file.path is missing', async () => {
+      jest.useFakeTimers().setSystemTime(new Date('2020-01-01'));
+
+      // File without path property
+      const fileWithoutPath = {
+        ...mockedFileData,
+        url: 'base/path/tmp/strapi/4l0ngH45h.jpeg',
+        path: undefined,
+      };
+
+      const providerInstance = provider.init(mockedConfig);
+      await providerInstance.getSignedUrl(fileWithoutPath);
+
+      expect(mockedBucket.file).toHaveBeenCalledWith('tmp/strapi/4l0ngH45h.jpeg');
+    });
+
+    test('Handles signed URLs in file.url when file.path is missing', async () => {
+      jest.useFakeTimers().setSystemTime(new Date('2020-01-01'));
+
+      // File with signed URL but no path
+      const fileWithSignedUrl = {
+        ...mockedFileData,
+        url: 'https://storage.googleapis.com/my-bucket/base/path/tmp/strapi/4l0ngH45h.jpeg?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test@project.iam.gserviceaccount.com%2F20240101%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20240101T000000Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=...',
+        path: undefined,
+      };
+
+      const providerInstance = provider.init(mockedConfig);
+      await providerInstance.getSignedUrl(fileWithSignedUrl);
+
+      expect(mockedBucket.file).toHaveBeenCalledWith('4l0ngH45h/4l0ngH45h.jpeg');
+    });
+  });
+
+  describe('Delete with path-based filename resolution', () => {
+    beforeEach(() => {
+      // Reset mock to not throw 404 error for these tests
+      mockedFile.delete = jest.fn();
+    });
+
+    test('Uses file.path instead of file.url to prevent double signing', async () => {
+      // Simulate a file with both path and url (where url might be signed)
+      const fileWithPath = {
+        ...mockedFileData,
+        path: '/tmp/strapi',
+        url: 'https://storage.googleapis.com/my-bucket/base/path/tmp/strapi/4l0ngH45h.jpeg?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=...', // signed URL
+      };
+
+      const providerInstance = provider.init(mockedConfig);
+      await providerInstance.delete(fileWithPath);
+
+      // Should use the reconstructed path from file.path, not the signed URL
+      expect(mockedBucket.file).toHaveBeenCalledWith('base/path/tmp/strapi/4l0ngH45h.jpeg');
+      expect(mockedFile.delete).toHaveBeenCalledTimes(1);
+    });
+
+    test('Falls back to file.url when file.path is missing', async () => {
+      // File without path property
+      const fileWithoutPath = {
+        ...mockedFileData,
+        url: 'base/path/tmp/strapi/4l0ngH45h.jpeg',
+        path: undefined,
+      };
+
+      const providerInstance = provider.init(mockedConfig);
+      await providerInstance.delete(fileWithoutPath);
+
+      expect(mockedBucket.file).toHaveBeenCalledWith('tmp/strapi/4l0ngH45h.jpeg');
+      expect(mockedFile.delete).toHaveBeenCalledTimes(1);
+    });
+
+    test('Handles signed URLs in file.url when file.path is missing', async () => {
+      // File with signed URL but no path
+      const fileWithSignedUrl = {
+        ...mockedFileData,
+        url: 'https://storage.googleapis.com/my-bucket/base/path/tmp/strapi/4l0ngH45h.jpeg?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test@project.iam.gserviceaccount.com%2F20240101%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20240101T000000Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=...',
+        path: undefined,
+      };
+
+      const providerInstance = provider.init(mockedConfig);
+      await providerInstance.delete(fileWithSignedUrl);
+
+      expect(mockedBucket.file).toHaveBeenCalledWith('4l0ngH45h/4l0ngH45h.jpeg');
+      expect(mockedFile.delete).toHaveBeenCalledTimes(1);
+    });
   });
 });
