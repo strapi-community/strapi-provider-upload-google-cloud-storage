@@ -21,7 +21,8 @@ We are using [GitHub Issues](https://github.com/strapi-community/strapi-provider
 
 ## Contribution Prerequisites
 
-* You have [Node](https://nodejs.org/en/) at v12.x.x only and [Yarn](https://yarnpkg.com/en/) at v1.2.0+.
+* You have [Node](https://nodejs.org/en/) at the version in [`.nvmrc`](.nvmrc) (or >=20)
+* You have [Yarn](https://classic.yarnpkg.com/en/) at v1.22+.
 * You are familiar with Git.
 
 This project is using `Yarn` so you need to use it for installation package.
@@ -36,7 +37,7 @@ The team will review your pull request and will either merge it, request changes
     - Run `yarn install` in the repository root.
     - If you’ve fixed a bug or added code that should be tested, add the tests and then link the corresponding issue in either your commit or your PR!
     - Ensure the test suites are passing:
-      - `yarn test` or `npm run test`
+      - `yarn test` or `npm run test:unit`
     - Make sure your code lints 
       - `yarn lint` or `npm run lint`
 2. Update the [README.md](README.md) with details of changes to the interface, this includes new environment 

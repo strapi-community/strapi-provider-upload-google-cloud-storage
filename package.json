@@ -88,10 +88,10 @@
     "rollup-plugin-html": "0.2.1",
     "ts-jest": "^29.3.1",
     "ts-node": "^10.9.2",
-    "typescript": "5.4.4"
+    "typescript": "5.9.3"
   },
   "engines": {
-    "node": ">=18.0.0 <=22.x.x",
+    "node": ">=18.0.0 <=26.x.x",
     "npm": ">=8",
     "yarn": "1.22.22"
   },
