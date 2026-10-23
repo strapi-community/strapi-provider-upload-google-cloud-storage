@@ -72,6 +72,7 @@
     "@swc/core": "1.3.10",
     "@tsconfig/node18": "^18.2.4",
     "@types/jest": "^29.5.14",
+    "@types/node": "^20.19.41",
     "@typescript-eslint/eslint-plugin": "^5.14.0",
     "@typescript-eslint/parser": "^5.14.0",
     "eslint": "^8.10.0",
@@ -91,7 +92,7 @@
     "typescript": "5.9.3"
   },
   "engines": {
-    "node": ">=18.0.0 <=26.x.x",
+    "node": ">=20.0.0 <=26.x.x",
     "npm": ">=8",
     "yarn": "1.22.22"
   },
