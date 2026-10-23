@@ -21,7 +21,7 @@ We are using [GitHub Issues](https://github.com/strapi-community/strapi-provider
 
 ## Contribution Prerequisites
 
-- You have [Node](https://nodejs.org/en/) at the version in [`.nvmrc`](.nvmrc) (or `>=20.11.0 <=26.x.x`) for development and builds. The published package supports `>=20.0.0 <=26.x.x`, as declared in [`package.json`](package.json).
+- You have [Node](https://nodejs.org/en/) at the version in [`.nvmrc`](.nvmrc) (or `>=22.20.0 <=26.x.x`) for development and builds. The published package supports `>=22.20.0 <=26.x.x`, as declared in [`package.json`](package.json).
 - You have [Yarn](https://classic.yarnpkg.com/en/) at v1.22.22.
 - You are familiar with Git.
 
