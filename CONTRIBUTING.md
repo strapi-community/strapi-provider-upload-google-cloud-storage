@@ -1,7 +1,7 @@
 # Contributing
 
 When contributing to this repository, please first discuss the change you wish to make via issue,
-email, or any other method with the owners of this repository before making a change. 
+email, or any other method with the owners of this repository before making a change.
 
 Please note we have a code of conduct, please follow it in all your interactions with the project.
 
@@ -21,8 +21,9 @@ We are using [GitHub Issues](https://github.com/strapi-community/strapi-provider
 
 ## Contribution Prerequisites
 
-* You have [Node](https://nodejs.org/en/) at v12.x.x only and [Yarn](https://yarnpkg.com/en/) at v1.2.0+.
-* You are familiar with Git.
+- You have [Node](https://nodejs.org/en/) at the version in [`.nvmrc`](.nvmrc) (or `>=22.20.0 <=26.x.x`) for development and builds. The published package supports `>=22.20.0 <=26.x.x`, as declared in [`package.json`](package.json).
+- You have [Yarn](https://classic.yarnpkg.com/en/) at v1.22.22.
+- You are familiar with Git.
 
 This project is using `Yarn` so you need to use it for installation package.
 
@@ -36,21 +37,25 @@ The team will review your pull request and will either merge it, request changes
     - Run `yarn install` in the repository root.
     - If you’ve fixed a bug or added code that should be tested, add the tests and then link the corresponding issue in either your commit or your PR!
     - Ensure the test suites are passing:
-      - `yarn test` or `npm run test`
-    - Make sure your code lints 
+      - `yarn test:unit` or `npm run test:unit`
+    - Make sure your code lints
       - `yarn lint` or `npm run lint`
-2. Update the [README.md](README.md) with details of changes to the interface, this includes new environment 
+2. Update the [README.md](README.md) with details of changes to the interface, this includes new environment
    variables, exposed ports, useful file locations and container parameters.
 3. You need to Signed-off-by all of your commits before push, like this example :
+
     ```shell script
     This is my commit message
-    
+
     Signed-off-by: Random J Developer <random@developer.example.org>
     ```
+
    Git even has a -s command line option to append this automatically to your commit message:
+
    ```
    $ git commit -s -m 'This is my commit message'
    ```
+
 4. A team leader will check, suggest modification, approve, merge, and close your request.
 
 ---
@@ -73,6 +78,5 @@ Before submitting an issue you need to make sure:
   - Make sure the application you are using to reproduce the issue has a clean `node_modules` directory, meaning:
     - no dependencies are linked (e.g. you haven't run `npm link`)
     - that you haven't made any inline changes to files in the `node_modules` folder
-    - that you don't have any weird global dependency loops. The easiest way to double-check any of the above, if you aren't sure, is to run: 
-        - `$ rm -rf node_modules && npm cache clear && npm install`.
-    
+    - that you don't have any weird global dependency loops. The easiest way to double-check any of the above, if you aren't sure, is to run:
+      - `$ rm -rf node_modules && npm cache clear && npm install`.
