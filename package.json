@@ -1,5 +1,5 @@
 {
-  "name": "@strapi-community/strapi-provider-upload-google-cloud-storage",
+  "name": "@devx-strapi/strapi-provider-upload-google-cloud-storage",
   "version": "5.0.4",
   "description": "Community Google Cloud Storage Provider for Strapi Upload",
   "keywords": [
@@ -10,33 +10,20 @@
     "storage",
     "gcp"
   ],
-  "homepage": "https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage#readme",
+  "homepage": "https://github.com/devx-agency/strapi-provider-upload-google-cloud-storage#readme",
   "bugs": {
-    "url": "https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage/issues"
+    "url": "https://github.com/devx-agency/strapi-provider-upload-google-cloud-storage/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/strapi-community/strapi-provider-upload-google-cloud-storage.git"
+    "url": "git+https://github.com/devx-agency/strapi-provider-upload-google-cloud-storage.git"
   },
   "license": "MIT",
   "author": {
     "name": "Strapi Community",
-    "url": "https://github.com/strapi-community"
+    "url": "https://github.com/devx-agency"
   },
-  "maintainers": [
-    {
-      "name": "Vanessa Pasque",
-      "email": "lith@amykron.com"
-    },
-    {
-      "name": "Mateusz Kleszcz",
-      "email": "mkleszcz@virtuslab.com"
-    },
-    {
-      "name": "Mateusz Ziarko",
-      "email": "mziarko@virtuslab.com"
-    }
-  ],
+  "maintainers": [],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "source": "./src/index.ts",
@@ -59,7 +46,7 @@
   "dependencies": {
     "@google-cloud/storage": "^7.15.2",
     "slugify": "^1.6.6",
-    "zod": "^4.0.0-beta.20250415T232143"
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "28.0.1",

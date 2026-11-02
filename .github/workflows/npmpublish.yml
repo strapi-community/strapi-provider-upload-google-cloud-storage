@@ -1,7 +1,8 @@
-name: Publish to NPM
+name: NPM build and push
+
 on:
   release:
-    types: [published]
+    types: [created]
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -27,19 +28,8 @@ jobs:
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
       - name: Set package version
         run: yarn version --new-version "${{ steps.get_version.outputs.VERSION }}" --no-git-tag-version
-      - name: Publish package (beta)
-        if: 'github.event.release.prerelease'
-        run: yarn publish --access public --tag beta
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish package (latest)
         if: '!github.event.release.prerelease'
         run: yarn publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Push version bump
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: 'chore: Bump version to ${{ steps.get_version.outputs.VERSION }}'
-          file_pattern: 'package.json'
-          branch: master
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
