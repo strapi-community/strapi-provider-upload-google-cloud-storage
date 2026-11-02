@@ -1,6 +1,6 @@
 {
   "name": "@devx-strapi/strapi-provider-upload-google-cloud-storage",
-  "version": "5.0.4",
+  "version": "5.1.0",
   "description": "Community Google Cloud Storage Provider for Strapi Upload",
   "keywords": [
     "strapi",
